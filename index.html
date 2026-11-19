@@ -108,6 +108,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 <div class="card">
 <div class="list-head"><h3 class="list-title" style="margin:0">打包進度</h3><span id="pc">0/0</span></div>
 <div class="bar"><i id="pb"></i></div>
+<p class="hint" style="margin:8px 0 0;text-align:center">未設定同步代碼時，勾選狀態只存在本機，無法跨裝置同步。需要的話可自行設定代碼。</p>
 <button class="btn" id="cd"></button>
 </div>
 <div id="app"></div>
@@ -424,8 +425,8 @@ document.getElementById("days").innerHTML=DAYS.map((d,i)=>
  '<div class="section"><p class="section-title">📍 行程焦點</p><p class="section-content">'+(d[2]||"尚未安排")+'</p></div></div>').join("");
 
 let CODE=localStorage.getItem("tokyo-trip-code")||"";
-function askCode(){return (prompt("請輸入你的代碼（數字或英文）。在其他裝置輸入同一個代碼，就能看到自己的清單。",CODE)||"").trim().replace(/[^A-Za-z0-9]/g,"").slice(0,20)}
-if(!CODE){CODE=askCode();if(CODE)localStorage.setItem("tokyo-trip-code",CODE)}
+function askCode(){return (prompt("請輸入同步代碼（數字或英文，最多20字）。\n\n同一代碼可在其他裝置看到相同的勾選狀態。\n若不需要跨裝置同步，可直接按取消。",CODE)||"").trim().replace(/[^A-Za-z0-9]/g,"").slice(0,20)}
+// 不再自動跳出提示，改由檢查清單內的按鈕自行設定
 const SYNC=API&&CODE;
 const KEY="tokyo-trip-checks:"+(CODE||"local");
 let S={},total=0,timer;
@@ -472,10 +473,24 @@ function switchTab(id){
 }
 document.querySelectorAll(".tab-btn").forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
 rs.onclick=()=>{if(confirm("確定全部取消勾選？")){S={};save();render()}};
-cd.textContent=CODE?"代碼："+CODE+"（切換）":"設定代碼";
-cd.onclick=()=>{const c=askCode();if(c){localStorage.setItem("tokyo-trip-code",c);location.reload()}};
+cd.textContent=CODE?"同步代碼："+CODE+"（點此變更）":"設定同步代碼（選用）";
+cd.onclick=()=>{
+  const c=askCode();
+  if(c){
+    localStorage.setItem("tokyo-trip-code",c);
+    location.reload();
+  }else if(CODE && confirm("要清除目前的同步代碼嗎？清除後將只使用本機儲存。")){
+    localStorage.removeItem("tokyo-trip-code");
+    location.reload();
+  }
+};
 render();
-if(SYNC)fetch(API+"/api/state?code="+CODE).then(r=>r.json()).then(s=>{if(s&&typeof s==="object"){S=s;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render();st("已同步 ✓")}}).catch(()=>st("離線中，僅存本機"));
+if(SYNC){
+  st("同步中…");
+  fetch(API+"/api/state?code="+CODE).then(r=>r.json()).then(s=>{if(s&&typeof s==="object"){S=s;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render();st("已同步 ✓")}}).catch(()=>st("離線中，僅存本機"));
+}else{
+  st("目前為本機模式（未設定同步代碼）");
+}
 
 function speakJa(text){
   if(!window.speechSynthesis){alert('此裝置不支援語音朗讀');return;}
