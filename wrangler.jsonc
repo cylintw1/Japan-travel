@@ -1,5 +1,5 @@
 {
-  "name": "tokyo-trip-sync",
+  "name": "Japan-Travel",
   "main": "worker.js",
   "compatibility_date": "2025-01-01",
   "kv_namespaces": [{ "binding": "TRIP", "id": "0e491bf90f2c46acb64c431094aca3bf" }]
