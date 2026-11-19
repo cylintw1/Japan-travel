@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>東京旅遊</title>
+<style>
+:root{--bg:#faf7f2;--card:#fff;--tx:#2b2b2b;--sub:#777;--ac:#c8372d;--ln:#eae4da;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1a1a1a;--card:#262626;--tx:#eee;--sub:#999;--ac:#ef6a5f;--ln:#383838;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Noto Sans TC","PingFang TC",sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{padding:20px 16px 8px;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--ln)}
+h1{margin:0;font-size:22px}
+.sub{color:var(--sub);font-size:13px;margin:2px 0 8px}
+.bar{height:8px;background:var(--ln);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .3s}
+main{padding:12px 12px 40px;max-width:640px;margin:auto}
+details{background:var(--card);border-radius:12px;margin-bottom:10px;border:1px solid var(--ln)}
+summary{padding:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary span{color:var(--sub);font-weight:400;font-size:13px}
+label{display:flex;gap:10px;padding:10px 14px;border-top:1px solid var(--ln);font-size:15px;line-height:1.45;align-items:flex-start}
+input{width:22px;height:22px;flex:none;accent-color:var(--ac);margin:1px 0 0}
+input:checked+div{color:var(--sub);text-decoration:line-through}
+#st{font-size:12px;color:var(--sub);text-align:center;margin-top:8px}
+button{margin:8px auto;display:block;background:none;border:1px solid var(--ln);color:var(--sub);padding:8px 14px;border-radius:8px;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1>東京旅遊 🗼</h1>
+<div class="sub">行前清單 · <b id="pc">0/0</b></div>
+<div class="bar"><i id="pb"></i></div>
+</header>
+<main>
+<div id="app"></div>
+<button id="rs">全部取消勾選</button>
+<div id="st"></div>
+</main>
+<script>
+// 部署 Worker 後，把網址貼在這裡（結尾不要加 /）；留空則只存在本機
+const API = "";
+const DATA = [
+["一、重要證件與金流",[
+"護照（確認效期足夠，台灣護照赴日觀光免簽證）",
+"Visit Japan Web 截圖（出發前完成入境審查與海關申報登錄，將 QR Code 存於手機相簿）",
+"電子機票 / 登機證",
+"1～2份護照影本 / 身分證影本 / 2～3張兩吋大頭照（分開放，遺失護照補辦用）",
+"信用卡（包含實體卡片與綁定 Apple Pay，建議帶兩張不同發卡組織如 Visa / JCB / Mastercard 備用）",
+"日幣現金",
+"交通卡（iPhone 可直接於「錢包」新增 Suica / PASMO 並儲值；Android 需於當地購買實體卡）",
+"零錢包（投幣機、神社參拜、扭蛋機用）",
+"旅平險 / 不便險證明（電子檔或紙本）",
+"住宿飯店資料影本（留一份給家人備查，自己也可存離線截圖）",
+"平安符"]],
+["二、電子產品與通訊",[
+"漫遊方案（電信原號漫遊或 eSIM，出發前先設定好），並開啟 Wi-Fi Calling",
+"行動電源（務必放隨身行李不可託運，機身需有清楚容量標示）",
+"充電線",
+"充電頭（豆腐頭） / 多孔充電器（日本為雙平腳插座，若為三孔插頭需自備三轉二轉接頭）",
+"耳機",
+"取卡針（若使用實體 SIM 卡）"]],
+["三、衣物、收納與穿戴",[
+"洋蔥式穿搭衣物（發熱衣 + 毛衣/大學T + 防風保暖大衣/羽絨外套，方便室內外穿脫）",
+"防寒三寶（圍巾、手套、毛帽）",
+"好走防滑的鞋子（建議鞋底紋路深、具防潑水功能，應付路面結霜或下雪）",
+"睡衣",
+"免洗 / 欲淘汰的內褲與襪子（穿完即丟，騰出行李箱空間）",
+"頸枕（如 CABEAU S3）",
+"毛巾",
+"行李秤",
+"髒衣服袋子 / 壓縮袋",
+"備用眼鏡（請連同塑型片用品一起放隨身行李）"]],
+["四、個人衛生與盥洗",[
+"牙刷、牙膏、牙線（日本部分環保旅宿已不主動提供一次性備品）",
+"洗面乳",
+"刮鬍刀",
+"旅行用洗衣精（可直接用飯店洗手台清洗貼身衣物）",
+"指甲剪（須放託運行李）",
+"隨身面紙 / 濕紙巾",
+"口罩（機上與乾燥室內保濕、防塵防流感）",
+"飯店拖鞋",
+"衛生棉"]],
+["五、藥品、護理與保養",[
+"藥物處方箋或英文診斷說明書（若有攜帶處方藥或特殊管制藥品）",
+"綜合藥包（含感冒藥、止痛藥、腸胃藥、暈車藥、OK繃等急救包）",
+"高保濕乳液 / 護手霜 / 凡士林（東京冬季極度乾燥，擦完保濕噴霧後必備鎖水）",
+"保濕噴霧",
+"護唇膏",
+"眼藥水",
+"角膜塑型片組（含塑型片、專用清潔液、保存盒、吸棒，務必放隨身行李）",
+"防曬乳（晴天或雪地紫外線仍強）",
+"防靜電噴霧 / 髮油（也可抵達日本後在藥妝店購買）"]],
+["六、生活雜項與出發前確認",[
+"預約機場接送",
+"暖暖包（帶幾片備用，不夠當地藥妝店隨時買得到）",
+"摺疊購物袋 / 環保袋（日本塑膠袋皆需收費，血拼必備）",
+"輕便隨身小包（放護照、手機、零錢包，退稅結帳最方便）",
+"折疊雨傘",
+"保溫水壺（天氣冷可裝熱水，過安檢前需倒空）",
+"原子筆（填寫紙本單據備用）",
+"幾包符合規定的小零食（注意肉類製品不可攜帶入境）"]]
+];
+const KEY="tokyo-trip-checks";
+let S={}, total=0, timer;
+try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+const st=t=>document.getElementById("st").textContent=t;
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+  if(!API)return;
+  clearTimeout(timer);
+  timer=setTimeout(async()=>{
+    try{const r=await fetch(API+"/api/state",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(S)});
+      st(r.ok?"已同步 ✓":"同步失敗")}catch(e){st("離線中，僅存本機")}
+  },400);
+}
+function progress(){
+  const n=Object.values(S).filter(Boolean).length;
+  pc.textContent=n+"/"+total;pb.style.width=(total?n/total*100:0)+"%";
+  document.querySelectorAll("details").forEach(d=>{
+    const b=d.querySelectorAll("input"),c=d.querySelectorAll("input:checked");
+    d.querySelector("summary span").textContent=c.length+"/"+b.length;
+  });
+}
+function render(){
+  total=0;const app=document.getElementById("app");app.innerHTML="";
+  DATA.forEach(([t,items],ci)=>{
+    const d=document.createElement("details");d.open=true;
+    d.innerHTML='<summary>'+t+'<span></span></summary>';
+    items.forEach((x,ii)=>{
+      total++;const id="c"+ci+"i"+ii;
+      const l=document.createElement("label");
+      const i=document.createElement("input");i.type="checkbox";i.checked=!!S[id];
+      i.onchange=()=>{S[id]=i.checked;if(!i.checked)delete S[id];save();progress()};
+      const v=document.createElement("div");v.textContent=x;
+      l.append(i,v);d.append(l);
+    });
+    app.append(d);
+  });
+  progress();
+}
+rs.onclick=()=>{if(confirm("確定全部取消勾選？")){S={};save();render()}};
+render();
+if(API)fetch(API+"/api/state").then(r=>r.json()).then(s=>{if(s&&typeof s==="object"){S=s;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render();st("已同步 ✓")}}).catch(()=>st("離線中，僅存本機"));
+</script>
+</body>
+</html>
