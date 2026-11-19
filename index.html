@@ -255,30 +255,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 <div id="order" class="tab-content">
 <div class="card">
 <span class="day-tag">家庭點餐</span>
-<h3 class="day-title">🍽️ 餐廳尚未決定</h3>
-<p class="section-content">目前東京行程的餐廳還沒定，點餐功能先預留架構。之後確定要去的餐廳（例如一蘭、一風堂、壽司店、燒肉等）後，可以把菜單補進來，全家人就能即時同步點餐清單。</p>
+<h3 class="day-title">🍽️ 家庭點餐</h3>
+<p class="section-content">全家人輸入<strong>相同代碼</strong>即可同步點餐。目前先以<strong>一蘭拉麵</strong>作為範例，之後可再增加其他餐廳。</p>
 </div>
 
 <div class="card">
-<div class="section-title">⚙️ 連線設定（之後啟用）</div>
-<label class="tool-label">Worker API 網址</label>
+<div class="section-title">🔑 輸入家庭代碼</div>
+<p class="hint" style="margin:0 0 10px">可中文、英文或數字。未設定時僅本機顯示。</p>
+<label class="tool-label">家庭代碼</label>
 <div class="tool-field" style="margin-bottom:12px">
-<input type="text" id="orderApiUrl" placeholder="https://你的-worker.xxx.workers.dev" value="">
+<input type="text" id="orderCode" placeholder="例如：林家2027、tokyo01、1234" maxlength="30" value="">
 </div>
-<label class="tool-label">你的名字／代號</label>
+<label class="tool-label">你的稱呼（點餐時顯示）</label>
 <div class="tool-field" style="margin-bottom:12px">
-<input type="text" id="orderPersonName" placeholder="例如：爸爸、小明" value="">
+<input type="text" id="orderPersonName" placeholder="例如：爸爸、媽媽、小明" maxlength="20" value="">
 </div>
-<button class="btn" onclick="alert('餐廳確定後再啟用同步功能')">儲存設定</button>
-<p class="hint">與美西行程相同機制：設定同一個 Worker 網址後，全家人的點餐會即時同步。</p>
+<button class="btn" id="orderSaveBtn" onclick="saveOrderSettings()">儲存設定</button>
+<p id="orderStatus" class="hint" style="text-align:center;margin-top:10px"></p>
 </div>
 
 <div class="card">
-<div class="section-title">📋 目前狀態</div>
-<p class="section-content">尚未加入任何餐廳菜單。確定餐廳後告訴我，我可以幫你補上對應的點餐選項（像 In-N-Out、Panda 那樣的結構）。</p>
-</div>
+<div class="section-title">🍜 一蘭拉麵（範例）</div>
+<p class="hint" style="margin:0 0 10px">點選數量後按「加入」，會同步到家庭清單。</p>
+<div id="menu_ichiran"></div>
 </div>
 
+<div class="card">
+<div class="section-title">📋 點餐結果</div>
+<p class="hint" style="margin:0 0 8px">切換顯示語言（不影響實際點餐資料）：</p>
+<div id="orderLangSwitch" style="display:flex;border:2px solid #1a73e8;border-radius:10px;overflow:hidden;margin-bottom:12px">
+<button type="button" id="viewZhBtn" onclick="setOrderView('zh')" style="flex:1;padding:12px 8px;border:none;background:#1a73e8;color:#fff;font-weight:700;font-size:.9rem;cursor:pointer">中文版 · 給家人看</button>
+<button type="button" id="viewJaBtn" onclick="setOrderView('ja')" style="flex:1;padding:12px 8px;border:none;background:#fff;color:#1a73e8;font-weight:700;font-size:.9rem;cursor:pointer">日文版 · 給店員看</button>
+</div>
+<p class="section-content" id="orderListMeta">設定家庭代碼後，這裡會顯示全家人的點餐內容。</p>
+<div id="orderEntryList"></div>
+<div id="orderSummaryBox" class="tip-box" style="margin-top:12px;white-space:pre-wrap;font-size:.9rem;display:none"></div>
+<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+<button class="btn" id="orderRefreshBtn" onclick="refreshOrder()" style="flex:1">🔄 重新整理</button>
+<button class="btn" id="orderClearMineBtn" onclick="clearMyOrders()" style="flex:1;background:#ea8600">🗑 清除我的點餐</button>
+<button class="btn" id="orderClearAllBtn" onclick="clearAllOrders()" style="flex:1;background:#c5221f">🗑 清除全部點餐</button>
+</div>
+</div>
+</div>
 
 <div id="taxfree" class="tab-content">
 <div class="card">
@@ -524,6 +542,487 @@ if(SYNC){
   fetch(API+"/api/state?code="+CODE).then(r=>r.json()).then(s=>{if(s&&typeof s==="object"){S=s;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render();st("已同步 ✓")}}).catch(()=>st("離線中，僅存本機"));
 }else{
   st("目前為本機模式（未設定同步代碼）");
+}
+
+
+
+// ===== 家庭點餐 =====
+const ORDER_API = "https://japan-travel.cylin-tw1-sc.workers.dev";
+// 清除權限驗證碼雜湊（SHA-256），前端不存放明文
+const _CLR_H = "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0";
+let orderPollTimer = null;
+let lastOrderData = null;
+let orderViewLang = "zh"; // zh | ja
+
+// 餐廳菜單（範例：一蘭）
+const MENUS = {
+  ichiran: {
+    label_zh: "一蘭拉麵",
+    label_ja: "一蘭ラーメン",
+    items: [
+      { id: "tonkotsu", zh: "一蘭拉麵（豚骨）", ja: "一蘭ラーメン（とんこつ）", price: "¥980" },
+      { id: "extra_noodle", zh: "追加麵", ja: "麺かたさ替え・替え玉", price: "¥190" },
+      { id: "chashu", zh: "叉燒（追加）", ja: "チャーシュー（追加）", price: "¥460" },
+      { id: "egg", zh: "味玉", ja: "味付け玉子", price: "¥120" },
+      { id: "nori", zh: "海苔", ja: "海苔", price: "¥120" },
+      { id: "rice", zh: "白飯", ja: "ライス", price: "¥260" },
+      { id: "beer", zh: "生啤酒", ja: "生ビール", price: "¥590" },
+      { id: "soft", zh: "軟性飲料", ja: "ソフトドリンク", price: "¥240" }
+    ]
+  }
+};
+
+function menuLabel(rest, lang){
+  const m = MENUS[rest];
+  if(!m) return rest;
+  return lang === "ja" ? m.label_ja : m.label_zh;
+}
+function itemLabel(rest, itemId, lang){
+  const m = MENUS[rest];
+  if(!m) return itemId;
+  const it = m.items.find(x => x.id === itemId || x.zh === itemId || x.ja === itemId);
+  if(!it) return itemId;
+  return lang === "ja" ? it.ja : it.zh;
+}
+
+async function sha256hex(str){
+  try {
+    if (typeof crypto !== "undefined" && crypto.subtle && crypto.subtle.digest) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+    }
+  } catch (e) {}
+  return sha256hexFallback(str);
+}
+function sha256hexFallback(msg){
+  // 正確處理 JS 32-bit 位移限制的 SHA-256
+  function rr(x,n){return (x>>>n)|(x<<(32-n))}
+  function utf8Encode(s){
+    const u=unescape(encodeURIComponent(s));
+    const a=new Uint8Array(u.length);
+    for(let i=0;i<u.length;i++) a[i]=u.charCodeAt(i);
+    return a;
+  }
+  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  let h0=0x6a09e667,h1=0xbb67ae85,h2=0x3c6ef372,h3=0xa54ff53a,h4=0x510e527f,h5=0x9b05688c,h6=0x1f83d9ab,h7=0x5be0cd19;
+  const data=utf8Encode(msg);
+  const l=data.length;
+  const bitLenHi=(l/0x20000000)|0;
+  const bitLenLo=(l<<3)>>>0;
+  const withPad=new Uint8Array(((l+9+63)&~63));
+  withPad.set(data);
+  withPad[l]=0x80;
+  const view=new DataView(withPad.buffer);
+  view.setUint32(withPad.length-8, bitLenHi);
+  view.setUint32(withPad.length-4, bitLenLo);
+  for(let i=0;i<withPad.length;i+=64){
+    const w=new Uint32Array(64);
+    for(let t=0;t<16;t++) w[t]=view.getUint32(i+t*4);
+    for(let t=16;t<64;t++){
+      const s0=rr(w[t-15],7)^rr(w[t-15],18)^(w[t-15]>>>3);
+      const s1=rr(w[t-2],17)^rr(w[t-2],19)^(w[t-2]>>>10);
+      w[t]=(w[t-16]+s0+w[t-7]+s1)>>>0;
+    }
+    let a=h0,b=h1,c=h2,d=h3,e=h4,f=h5,g=h6,h=h7;
+    for(let t=0;t<64;t++){
+      const S1=rr(e,6)^rr(e,11)^rr(e,25);
+      const ch=(e&f)^((~e)&g);
+      const t1=(h+S1+ch+K[t]+w[t])>>>0;
+      const S0=rr(a,2)^rr(a,13)^rr(a,22);
+      const maj=(a&b)^(a&c)^(b&c);
+      const t2=(S0+maj)>>>0;
+      h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0;
+    }
+    h0=(h0+a)>>>0;h1=(h1+b)>>>0;h2=(h2+c)>>>0;h3=(h3+d)>>>0;
+    h4=(h4+e)>>>0;h5=(h5+f)>>>0;h6=(h6+g)>>>0;h7=(h7+h)>>>0;
+  }
+  return [h0,h1,h2,h3,h4,h5,h6,h7].map(x=>x.toString(16).padStart(8,"0")).join("");
+}
+
+function saveOrderSettings(){
+  const code = (document.getElementById("orderCode").value || "").trim().slice(0,30);
+  const name = (document.getElementById("orderPersonName").value || "").trim().slice(0,20);
+  if(code) localStorage.setItem("tokyo-order-code", code);
+  else localStorage.removeItem("tokyo-order-code");
+  if(name) localStorage.setItem("tokyo-order-name", name);
+  else localStorage.removeItem("tokyo-order-name");
+  updateOrderStatus();
+  if(code){ refreshOrder(); startOrderPoll(); }
+  else { stopOrderPoll(); renderOrderEmpty("尚未設定代碼，僅本機顯示。"); }
+  alert(code ? "已儲存。家人輸入相同代碼即可同步。" : "已清除代碼，目前僅本機模式。");
+}
+
+function updateOrderStatus(){
+  const code = localStorage.getItem("tokyo-order-code") || "";
+  const name = localStorage.getItem("tokyo-order-name") || "";
+  const el = document.getElementById("orderStatus");
+  const codeInput = document.getElementById("orderCode");
+  const nameInput = document.getElementById("orderPersonName");
+  const refreshBtn = document.getElementById("orderRefreshBtn");
+  const clearMineBtn = document.getElementById("orderClearMineBtn");
+  const clearAllBtn = document.getElementById("orderClearAllBtn");
+  if(codeInput && !codeInput.value) codeInput.value = code;
+  if(nameInput && !nameInput.value) nameInput.value = name;
+  if(el){
+    el.textContent = code
+      ? ("目前代碼：「" + code + "」" + (name ? "　稱呼：" + name : "") + "　（已可跨裝置同步）")
+      : "尚未設定代碼，僅本機顯示，無法與家人同步。";
+  }
+  if(refreshBtn) refreshBtn.style.display = "inline-block";
+  if(clearMineBtn) clearMineBtn.style.display = "inline-block";
+  if(clearAllBtn) clearAllBtn.style.display = "inline-block";
+}
+
+function renderMenu(rest){
+  const m = MENUS[rest];
+  const el = document.getElementById("menu_" + rest);
+  if(!m || !el) return;
+  el.innerHTML = m.items.map((it, idx) => `
+    <div class="menu-item-row" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid #eee">
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:.95rem">${it.zh}</div>
+        <div class="hint" style="margin:2px 0 0">${it.ja}　${it.price}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button type="button" class="qty-btn" onclick="changeQty('${rest}',${idx},-1)" style="width:32px;height:32px;border:1px solid #dadce0;border-radius:8px;background:#fff;font-size:1.1rem">−</button>
+        <span id="qty_${rest}_${idx}" style="min-width:24px;text-align:center;font-weight:600">1</span>
+        <button type="button" class="qty-btn" onclick="changeQty('${rest}',${idx},1)" style="width:32px;height:32px;border:1px solid #dadce0;border-radius:8px;background:#fff;font-size:1.1rem">＋</button>
+        <button type="button" class="btn" style="padding:6px 12px;font-size:.85rem;margin:0" onclick="addOrderItem('${rest}',${idx})">加入</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function changeQty(rest, idx, delta){
+  const el = document.getElementById("qty_" + rest + "_" + idx);
+  if(!el) return;
+  let n = parseInt(el.textContent) || 1;
+  n = Math.max(1, Math.min(20, n + delta));
+  el.textContent = n;
+}
+
+async function addOrderItem(rest, idx){
+  const code = localStorage.getItem("tokyo-order-code") || "";
+  const person = localStorage.getItem("tokyo-order-name") || document.getElementById("orderPersonName")?.value?.trim() || "";
+  if(!code){ alert("請先設定家庭代碼並儲存"); return; }
+  if(!person){ alert("請先填寫你的稱呼並儲存"); return; }
+  const m = MENUS[rest];
+  if(!m) return;
+  const it = m.items[idx];
+  const qtyEl = document.getElementById("qty_" + rest + "_" + idx);
+  const qty = qtyEl ? (parseInt(qtyEl.textContent) || 1) : 1;
+
+  // 先寫入本機快取，再嘗試同步
+  const localKey = "tokyo-order-local:" + code;
+  let local = [];
+  try { local = JSON.parse(localStorage.getItem(localKey) || "[]"); } catch(e){}
+  const entry = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    restaurant: rest,
+    person,
+    itemId: it.id,
+    item_zh: it.zh,
+    item_ja: it.ja,
+    qty,
+    ts: Date.now()
+  };
+  local.push(entry);
+  localStorage.setItem(localKey, JSON.stringify(local));
+  try {
+    sessionStorage.removeItem("tokyo-order-cleared-all:" + code);
+    sessionStorage.removeItem("tokyo-order-cleared-person:" + code);
+  } catch(e){}
+  renderOrderResults({ orders: local });
+
+  // 嘗試送到 Worker
+  try {
+    const res = await fetch(ORDER_API + "/api/order?code=" + encodeURIComponent(code), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "add", restaurant: rest, person, item: it.zh, item_ja: it.ja, itemId: it.id, qty })
+    });
+    if(res.ok){
+      const state = await res.json();
+      if(state) renderOrderResults(state);
+    }
+  }catch(e){
+    // 離線時僅用本機
+  }
+}
+
+function setOrderView(lang){
+  orderViewLang = lang;
+  var zhBtn = document.getElementById("viewZhBtn");
+  var jaBtn = document.getElementById("viewJaBtn");
+  if(zhBtn){
+    zhBtn.style.background = lang === "zh" ? "#1a73e8" : "#fff";
+    zhBtn.style.color = lang === "zh" ? "#fff" : "#1a73e8";
+  }
+  if(jaBtn){
+    jaBtn.style.background = lang === "ja" ? "#1a73e8" : "#fff";
+    jaBtn.style.color = lang === "ja" ? "#fff" : "#1a73e8";
+  }
+  var code = getOrderCode();
+  var local = code ? loadLocalOrders(code) : [];
+  if(local.length){
+    lastOrderData = { orders: local };
+    renderOrderResults({ orders: local });
+  } else if(lastOrderData){
+    renderOrderResults(lastOrderData);
+  } else {
+    renderOrderEmpty(lang === "ja" ? "現在注文はありません。" : "目前還沒有人點餐。");
+  }
+}
+
+function renderOrderEmpty(msg){
+  const meta = document.getElementById("orderListMeta");
+  const list = document.getElementById("orderEntryList");
+  const box = document.getElementById("orderSummaryBox");
+  if(meta) meta.textContent = msg || "目前沒有點餐內容。";
+  if(list) list.innerHTML = "";
+  if(box){ box.style.display = "none"; box.textContent = ""; }
+}
+
+function normalizeEntries(data){
+  let entries = [];
+  if(Array.isArray(data)) entries = data;
+  else if(data && typeof data === "object"){
+    if(Array.isArray(data.orders)) entries = data.orders;
+    else if(Array.isArray(data.entries)) entries = data.entries;
+    else if(Array.isArray(data.items)) entries = data.items;
+    else {
+      Object.keys(data).forEach(k => {
+        if(Array.isArray(data[k])){
+          data[k].forEach(e => entries.push({ ...e, restaurant: e.restaurant || k }));
+        }
+      });
+    }
+  }
+  return entries;
+}
+
+function renderOrderResults(data){
+  const listEl = document.getElementById("orderEntryList");
+  const metaEl = document.getElementById("orderListMeta");
+  const box = document.getElementById("orderSummaryBox");
+  if(!listEl) return;
+  lastOrderData = data;
+  const entries = normalizeEntries(data);
+  if(!entries.length){
+    renderOrderEmpty(orderViewLang === "ja" ? "現在注文はありません。" : "目前還沒有人點餐。");
+    return;
+  }
+
+  const byRest = {};
+  entries.forEach(e => {
+    const r = e.restaurant || e.shop || "ichiran";
+    if(!byRest[r]) byRest[r] = [];
+    byRest[r].push(e);
+  });
+
+  let html = "";
+  const summaryLines = [];
+  Object.keys(byRest).forEach(rest => {
+    const restName = menuLabel(rest, orderViewLang);
+    html += `<div style="margin-bottom:14px"><div class="section-title" style="margin-bottom:6px">${restName}</div>`;
+    if(orderViewLang === "ja") summaryLines.push("【" + restName + "】");
+    else summaryLines.push("【" + restName + "】");
+
+    byRest[rest].forEach(e => {
+      const person = e.person || e.name || (orderViewLang === "ja" ? "お客様" : "某人");
+      let item = e.item_ja && orderViewLang === "ja" ? e.item_ja
+               : e.item_zh && orderViewLang === "zh" ? e.item_zh
+               : e.item || e.name || e.title || "";
+      if(!item && e.itemId) item = itemLabel(rest, e.itemId, orderViewLang);
+      if(!item) item = orderViewLang === "ja" ? "商品" : "項目";
+      const qty = e.qty || e.quantity || 1;
+      const note = e.note ? `（${e.note}）` : "";
+      html += `<div class="order-entry"><span>${person}：${item} × ${qty}${note}</span></div>`;
+    });
+
+    const totals = {};
+    byRest[rest].forEach(e => {
+      let item = e.item_ja && orderViewLang === "ja" ? e.item_ja
+               : e.item_zh && orderViewLang === "zh" ? e.item_zh
+               : e.item || e.name || "";
+      if(!item && e.itemId) item = itemLabel(rest, e.itemId, orderViewLang);
+      if(!item) item = "?";
+      const qty = e.qty || e.quantity || 1;
+      totals[item] = (totals[item] || 0) + qty;
+    });
+    const summary = Object.keys(totals).map(k => `${k} x ${totals[k]}`).join(orderViewLang === "ja" ? "、" : "、");
+    html += `<p class="hint" style="margin:6px 0 0">${orderViewLang === "ja" ? "合計" : "合計"}：${summary}</p></div>`;
+    Object.keys(totals).forEach(k => summaryLines.push(`${k} x ${totals[k]}`));
+    summaryLines.push("");
+  });
+
+  if(metaEl) metaEl.textContent = orderViewLang === "ja"
+    ? "ご注文内容（店員さん向け）"
+    : "以下是目前同步到的點餐內容（家人用）：";
+  listEl.innerHTML = html;
+  if(box){
+    box.style.display = "block";
+    box.textContent = summaryLines.join("\n").trim();
+  }
+}
+
+async function refreshOrder(){
+  var code = getOrderCode();
+  var metaEl = document.getElementById("orderListMeta");
+  if(!code){
+    renderOrderEmpty("尚未設定代碼。請先輸入家庭代碼並儲存。");
+    return;
+  }
+  // 一律以本機為準顯示（清除後不會被伺服器舊資料蓋回）
+  var local = loadLocalOrders(code);
+  if(local.length){
+    lastOrderData = { orders: local };
+    renderOrderResults({ orders: local });
+  } else {
+    renderOrderEmpty(orderViewLang === "ja" ? "現在注文はありません。" : "目前還沒有人點餐。");
+  }
+  // 背景嘗試從伺服器合併「新增」項目（不覆蓋本機已刪除的）
+  try {
+    var urls = [
+      ORDER_API + "/api/order?code=" + encodeURIComponent(code),
+      ORDER_API + "/api/order/" + encodeURIComponent(code)
+    ];
+    for(var u=0;u<urls.length;u++){
+      try {
+        var res = await fetch(urls[u]);
+        if(!res.ok) continue;
+        var data = await res.json();
+        var remote = normalizeEntries(data);
+        if(!remote.length) break;
+        // 若本機剛被清空（使用者清除全部），不要把遠端整包蓋回來
+        var clearedAll = sessionStorage.getItem("tokyo-order-cleared-all:" + code) === "1";
+        if(clearedAll) break;
+        // 合併：遠端有、本機沒有的 id 才加入
+        var localIds = {};
+        for(var i=0;i<local.length;i++) localIds[local[i].id] = true;
+        var merged = local.slice();
+        var added = 0;
+        for(var j=0;j<remote.length;j++){
+          var e = remote[j];
+          if(e.id && localIds[e.id]) continue;
+          // 若使用者清除了某人，跳過該 person
+          var clearedPerson = sessionStorage.getItem("tokyo-order-cleared-person:" + code);
+          if(clearedPerson && (e.person || e.name) === clearedPerson) continue;
+          if(!e.id) e.id = "r" + j + "_" + Date.now();
+          merged.push(e);
+          added++;
+        }
+        if(added > 0){
+          saveLocalOrders(code, merged);
+          lastOrderData = { orders: merged };
+          renderOrderResults({ orders: merged });
+        }
+        break;
+      } catch(e){}
+    }
+  } catch(err){}
+}
+
+
+
+function getOrderCode(){
+  return (localStorage.getItem("tokyo-order-code") || "").trim();
+}
+function getOrderName(){
+  var n = (localStorage.getItem("tokyo-order-name") || "").trim();
+  if(!n){
+    var el = document.getElementById("orderPersonName");
+    if(el) n = (el.value || "").trim();
+  }
+  return n;
+}
+function loadLocalOrders(code){
+  try { return JSON.parse(localStorage.getItem("tokyo-order-local:" + code) || "[]"); }
+  catch(e){ return []; }
+}
+function saveLocalOrders(code, list){
+  localStorage.setItem("tokyo-order-local:" + code, JSON.stringify(list));
+}
+function clearMyOrders(){
+  var code = getOrderCode();
+  var name = getOrderName();
+  if(!code){ alert("請先設定家庭代碼並按「儲存設定」"); return; }
+  if(!name){ alert("請先設定你的稱呼並按「儲存設定」"); return; }
+  if(!confirm("確定要清除「" + name + "」的所有點餐嗎？（不會影響其他人）")) return;
+  var local = loadLocalOrders(code);
+  var next = [];
+  for(var i=0;i<local.length;i++){
+    var p = local[i].person || local[i].name || "";
+    if(p !== name) next.push(local[i]);
+  }
+  saveLocalOrders(code, next);
+  try { sessionStorage.setItem("tokyo-order-cleared-person:" + code, name); } catch(e){}
+  lastOrderData = { orders: next };
+  renderOrderResults({ orders: next });
+  try {
+    fetch(ORDER_API + "/api/order?code=" + encodeURIComponent(code), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "clear_person", person: name })
+    }).catch(function(){});
+  } catch(e){}
+  alert("已清除「" + name + "」的點餐（剩 " + next.length + " 筆）");
+}
+function clearAllOrders(){
+  var code = getOrderCode();
+  if(!code){ alert("請先設定家庭代碼並按「儲存設定」"); return; }
+  if(!confirm("確定要清除此家庭代碼下的「全部」點餐資料嗎？（所有人的項目都會消失）")) return;
+  saveLocalOrders(code, []);
+  try {
+    sessionStorage.setItem("tokyo-order-cleared-all:" + code, "1");
+    sessionStorage.removeItem("tokyo-order-cleared-person:" + code);
+  } catch(e){}
+  lastOrderData = { orders: [] };
+  renderOrderResults({ orders: [] });
+  try {
+    fetch(ORDER_API + "/api/order?code=" + encodeURIComponent(code), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "clear_all" })
+    }).catch(function(){});
+  } catch(e){}
+  alert("已清除全部點餐");
+}
+
+
+
+function startOrderPoll(){
+  stopOrderPoll();
+  orderPollTimer = setInterval(refreshOrder, 5000);
+}
+function stopOrderPoll(){
+  if(orderPollTimer){ clearInterval(orderPollTimer); orderPollTimer = null; }
+}
+
+document.addEventListener("click", function(e){
+  const btn = e.target.closest(".tab-btn");
+  if(btn && btn.dataset.tab === "order"){
+    setTimeout(function(){
+      updateOrderStatus();
+      renderMenu("ichiran");
+      const code = localStorage.getItem("tokyo-order-code");
+      if(code){ refreshOrder(); startOrderPoll(); }
+    }, 50);
+  }else if(btn && btn.dataset.tab !== "order"){
+    stopOrderPoll();
+  }
+});
+
+function initOrderTab(){
+  updateOrderStatus();
+  renderMenu("ichiran");
+  const code = localStorage.getItem("tokyo-order-code");
+  if(code) refreshOrder();
+}
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", initOrderTab);
+}else{
+  initOrderTab();
 }
 
 function speakJa(text){
