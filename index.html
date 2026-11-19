@@ -420,9 +420,43 @@ const DAYS=[
 ["1/23 (六)","台灣桃園 ➔ 東京成田","搭乘 JX804（15:00 起飛），19:00 抵達成田機場 NRT，前往葛飾區住宿。"],
 ["1/24 (日)","",""],["1/25 (一)","",""],["1/26 (二)","",""],["1/27 (三)","",""],["1/28 (四)","",""],
 ["1/29 (五)","東京成田 ➔ 台灣桃園","搭乘 JX801（13:45 起飛），16:50 抵達桃園機場 TPE。"]];
-document.getElementById("days").innerHTML=DAYS.map((d,i)=>
- '<div class="card"><span class="day-tag">Day '+(i+1)+' · '+d[0]+'</span><h3 class="day-title">'+(d[1]||"行程待安排")+'</h3>'+
- '<div class="section"><p class="section-title">📍 行程焦點</p><p class="section-content">'+(d[2]||"尚未安排")+'</p></div></div>').join("");
+// 東京1月下旬歷史平均（氣象廳1991-2020平年值＋近年參考）
+// 最高約 9~11°C、最低約 1~2°C、乾燥、偶有降雨／零星降雪
+const WEATHER_NOTE = `<div class="card">
+<span class="day-tag">🌤 天氣參考</span>
+<h3 class="day-title">1月下旬東京歷史平均</h3>
+<p class="section-content">目前無法取得2027年即時預報，以下為氣象廳平年值與近年統計，供打包與穿著參考。</p>
+<div class="divider"></div>
+<table class="luggage-table">
+<tr><th>項目</th><th>參考值</th></tr>
+<tr><td>白天高溫</td><td>約 9～11°C</td></tr>
+<tr><td>夜間低溫</td><td>約 1～2°C（偶有零度以下）</td></tr>
+<tr><td>體感</td><td>乾燥、風大時偏冷</td></tr>
+<tr><td>降雨</td><td>下旬平均雨日約 1.5 天，雨量不多</td></tr>
+<tr><td>降雪</td><td>機會不高，偶有零星；近年曾有積雪紀錄</td></tr>
+<tr><td>濕度</td><td>約 50～55%，偏乾（護唇膏、乳液建議帶）</td></tr>
+</table>
+<div class="tip-box" style="margin-top:12px">穿著建議：發熱衣＋毛衣／大學T＋防風保暖外套，再加圍巾、手套、毛帽。室內外溫差大，方便穿脫的洋蔥式最好。</div>
+<p class="hint" style="margin-top:8px">資料來源：日本氣象廳（東京觀測點）1991–2020 平年值，以及近年 1 月下旬統計。實際天氣請出發前再查最新預報。</p>
+</div>`;
+
+const DAY_WEATHER = [
+  {icon:"✈️", text:"起飛日・成田晚上偏涼，約 2～9°C"},
+  {icon:"🌤", text:"典型冬日・約 2～10°C，乾燥"},
+  {icon:"🌤", text:"典型冬日・約 2～10°C，乾燥"},
+  {icon:"🌤", text:"典型冬日・約 2～10°C，乾燥"},
+  {icon:"🌤", text:"典型冬日・約 2～10°C，乾燥"},
+  {icon:"🌤", text:"典型冬日・約 2～10°C，乾燥"},
+  {icon:"✈️", text:"回程日・白天約 2～10°C，成田起飛前注意保暖"}
+];
+
+document.getElementById("days").innerHTML = WEATHER_NOTE + DAYS.map((d,i)=>{
+  const w = DAY_WEATHER[i] || {icon:"🌤", text:"約 2～10°C"};
+  return '<div class="card"><span class="day-tag">Day '+(i+1)+' · '+d[0]+'</span>'+
+    '<h3 class="day-title">'+(d[1]||"行程待安排")+'</h3>'+
+    '<div class="section"><p class="section-title">'+w.icon+' 天氣參考</p><p class="section-content">'+w.text+' <span class="badge badge-weather">歷史平均</span></p></div>'+
+    '<div class="section"><p class="section-title">📍 行程焦點</p><p class="section-content">'+(d[2]||"尚未安排")+'</p></div></div>';
+}).join("");
 
 let CODE=localStorage.getItem("tokyo-trip-code")||"";
 function askCode(){return (prompt("請輸入同步代碼（數字或英文，最多20字）。\n\n同一代碼可在其他裝置看到相同的勾選狀態。\n若不需要跨裝置同步，可直接按取消。",CODE)||"").trim().replace(/[^A-Za-z0-9]/g,"").slice(0,20)}
