@@ -39,6 +39,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .bar i{display:block;height:100%;width:0;background:var(--primary);transition:width .3s}
 .btn{display:block;margin:8px auto;background:#fff;border:1px solid #dadce0;color:var(--text-sub);padding:9px 16px;border-radius:20px;font-size:.85rem;cursor:pointer}
 #st{font-size:.78rem;color:var(--text-sub);text-align:center;margin-top:8px}
+
+/* 實用日文 */
+.phrase-item{padding:12px 0;border-bottom:1px solid #f1f3f4}
+.phrase-item:last-child{border-bottom:none}
+.phrase-en{font-size:1rem;font-weight:700;color:var(--primary-dark)}
+.phrase-en-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.speak-btn{flex-shrink:0;background:var(--tag-blue);color:var(--primary);border:none;border-radius:50%;width:32px;height:32px;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.speak-btn:active{background:var(--primary);color:#fff}
+.phrase-zh{font-size:.88rem;color:var(--text-main);margin-top:2px}
+.phrase-reply{font-size:.85rem;color:var(--tag-green-text);margin-top:4px}
+/* 行李須知 */
+.luggage-table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:8px}
+.luggage-table th{text-align:left;font-size:.78rem;color:var(--text-sub);padding:6px 4px;border-bottom:2px solid #eee}
+.luggage-table td{padding:10px 4px;border-bottom:1px solid #f1f3f4;vertical-align:top}
+.luggage-table td:first-child{font-weight:700;color:var(--primary-dark);white-space:nowrap}
+.tip-box{background:#fef7e0;border-left:4px solid #b06000;padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.88rem;line-height:1.55}
+/* 家庭點餐 */
+.restaurant-switch{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}
+.restaurant-btn{flex:0 0 auto;background:#f1f3f4;color:var(--text-main);border:1px solid #dadce0;border-radius:20px;padding:8px 14px;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.restaurant-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.menu-item-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #f1f3f4}
+.menu-item-row:last-child{border-bottom:none}
+.menu-item-name{font-size:.92rem;flex:1}
+.qty-stepper{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.qty-btn{width:28px;height:28px;border-radius:50%;border:1px solid #dadce0;background:#fafbfc;font-size:1rem;font-weight:700;color:var(--primary-dark);cursor:pointer}
+.qty-value{width:20px;text-align:center;font-weight:700;font-size:.92rem}
+.add-item-btn{flex-shrink:0;background:var(--tag-green);color:var(--tag-green-text);border:none;border-radius:16px;padding:6px 12px;font-size:.82rem;font-weight:700;cursor:pointer}
+.order-entry{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid #f1f3f4;font-size:.9rem}
+.order-entry:last-child{border-bottom:none}
+.order-entry-remove{flex-shrink:0;background:none;border:none;color:#c5221f;font-size:1rem;cursor:pointer;padding:4px 8px}
+.tool-label{display:block;font-size:.85rem;font-weight:700;margin-bottom:4px}
+.tool-field input{width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid #dadce0;font-size:.95rem;background:#fafbfc}
+.hint{font-size:.78rem;color:var(--text-sub);margin-top:8px;line-height:1.5}
+
 </style>
 </head>
 <body>
@@ -50,6 +84,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 <button class="tab-btn" data-tab="checklist">✅ 檢查清單</button>
 <button class="tab-btn" data-tab="flight">✈️ 航班</button>
 <button class="tab-btn" data-tab="stay">🏨 住宿</button>
+<button class="tab-btn" data-tab="japanese">🗣️ 實用日文</button>
+<button class="tab-btn" data-tab="luggage">🧳 行李須知</button>
+<button class="tab-btn" data-tab="order">🍽️ 家庭點餐</button>
 </div>
 </div>
 <div class="container">
@@ -103,6 +140,137 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 </div>
 
 </div>
+
+<div id="japanese" class="tab-content">
+<div class="card">
+<h3 class="list-title">🗣️ 實用日文（點 🔊 可朗讀）</h3>
+<p class="hint">點發音按鈕可讓手機朗讀日文，方便現場練習。</p>
+</div>
+<div class="card">
+<div class="section-title">基本問候</div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">こんにちは</span><button class="speak-btn" onclick="speakJa('こんにちは')">🔊</button></div><div class="phrase-zh">午安／你好（白天用）</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">おはようございます</span><button class="speak-btn" onclick="speakJa('おはようございます')">🔊</button></div><div class="phrase-zh">早安</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">こんばんは</span><button class="speak-btn" onclick="speakJa('こんばんは')">🔊</button></div><div class="phrase-zh">晚安／晚上好</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">ありがとうございます</span><button class="speak-btn" onclick="speakJa('ありがとうございます')">🔊</button></div><div class="phrase-zh">謝謝</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">すみません</span><button class="speak-btn" onclick="speakJa('すみません')">🔊</button></div><div class="phrase-zh">不好意思／對不起／請問</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">お願いします</span><button class="speak-btn" onclick="speakJa('お願いします')">🔊</button></div><div class="phrase-zh">麻煩您了／拜託</div></div>
+</div>
+<div class="card">
+<div class="section-title">購物／結帳</div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">いくらですか？</span><button class="speak-btn" onclick="speakJa('いくらですか')">🔊</button></div><div class="phrase-zh">多少錢？</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">これください</span><button class="speak-btn" onclick="speakJa('これください')">🔊</button></div><div class="phrase-zh">請給我這個</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">袋はいりません</span><button class="speak-btn" onclick="speakJa('袋はいりません')">🔊</button></div><div class="phrase-zh">不用袋子</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">免税でお願いします</span><button class="speak-btn" onclick="speakJa('免税でお願いします')">🔊</button></div><div class="phrase-zh">請幫我退稅</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">クレジットカードで払えますか？</span><button class="speak-btn" onclick="speakJa('クレジットカードで払えますか')">🔊</button></div><div class="phrase-zh">可以用信用卡嗎？</div></div>
+</div>
+<div class="card">
+<div class="section-title">餐廳／點餐</div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">メニューをください</span><button class="speak-btn" onclick="speakJa('メニューをください')">🔊</button></div><div class="phrase-zh">請給我菜單</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">おすすめは何ですか？</span><button class="speak-btn" onclick="speakJa('おすすめは何ですか')">🔊</button></div><div class="phrase-zh">有什麼推薦的嗎？</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">これをお願いします</span><button class="speak-btn" onclick="speakJa('これをお願いします')">🔊</button></div><div class="phrase-zh">請給我這個</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">お会計をお願いします</span><button class="speak-btn" onclick="speakJa('お会計をお願いします')">🔊</button></div><div class="phrase-zh">請結帳</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">おいしかったです</span><button class="speak-btn" onclick="speakJa('おいしかったです')">🔊</button></div><div class="phrase-zh">很好吃</div></div>
+</div>
+<div class="card">
+<div class="section-title">交通／問路</div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">〇〇はどこですか？</span><button class="speak-btn" onclick="speakJa('どこですか')">🔊</button></div><div class="phrase-zh">〇〇在哪裡？（把〇〇換成地名）</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">駅はどこですか？</span><button class="speak-btn" onclick="speakJa('駅はどこですか')">🔊</button></div><div class="phrase-zh">車站在哪裡？</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">トイレはどこですか？</span><button class="speak-btn" onclick="speakJa('トイレはどこですか')">🔊</button></div><div class="phrase-zh">洗手間在哪裡？</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">英語のメニューはありますか？</span><button class="speak-btn" onclick="speakJa('英語のメニューはありますか')">🔊</button></div><div class="phrase-zh">有英文菜單嗎？</div></div>
+</div>
+<div class="card">
+<div class="section-title">緊急／其他</div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">助けてください</span><button class="speak-btn" onclick="speakJa('助けてください')">🔊</button></div><div class="phrase-zh">請幫幫我</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">病院はどこですか？</span><button class="speak-btn" onclick="speakJa('病院はどこですか')">🔊</button></div><div class="phrase-zh">醫院在哪裡？</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">わかりません</span><button class="speak-btn" onclick="speakJa('わかりません')">🔊</button></div><div class="phrase-zh">我聽不懂／不知道</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">もう一度お願いします</span><button class="speak-btn" onclick="speakJa('もう一度お願いします')">🔊</button></div><div class="phrase-zh">請再說一次</div></div>
+</div>
+</div>
+
+<div id="luggage" class="tab-content">
+<div class="card">
+<span class="day-tag">星宇航空 JX</span>
+<h3 class="day-title">🧳 行李須知（東京短程）</h3>
+<p class="section-content">以下依 2026 年星宇官方規定整理，實際額度以你的機票票價艙等為準，出發前請再確認電子機票上的行李欄位。</p>
+</div>
+
+<div class="card">
+<div class="section-title">🎒 手提行李（客艙）</div>
+<table class="luggage-table">
+<tr><th>艙等</th><th>件數與重量</th><th>尺寸</th></tr>
+<tr><td>經濟艙／豪華經濟艙</td><td>1 件，總重 7 公斤</td><td>單件 36×23×56 cm<br>或三邊合計 ≤115 cm</td></tr>
+<tr><td>商務艙／頭等艙</td><td>2 件，總重 14 公斤<br>（單件限重 10 公斤）</td><td>同上</td></tr>
+</table>
+<p class="hint" style="margin-top:10px">另可帶 1 件個人物品（如小型背包、公事包），尺寸上限約 40×10×30 cm 或三邊合計 ≤80 cm。</p>
+</div>
+
+<div class="card">
+<div class="section-title">🧳 免費託運行李（短程・亞洲航線）</div>
+<table class="luggage-table">
+<tr><th>艙等／票種</th><th>件數</th><th>單件重量</th></tr>
+<tr><td>經濟艙 限量（Q）</td><td>1 件</td><td>23 公斤</td></tr>
+<tr><td>經濟艙 超值／基本／全額</td><td>1～2 件</td><td>23 公斤</td></tr>
+<tr><td>豪華經濟艙</td><td>2 件</td><td>23 公斤</td></tr>
+<tr><td>商務艙</td><td>2 件</td><td>32 公斤</td></tr>
+<tr><td>頭等艙</td><td>3 件</td><td>32 公斤</td></tr>
+</table>
+<div class="tip-box">⚠️ 單件建議不要超過 23 公斤（搬運標籤 HEAVY），超過 32 公斤需事先申請。建議尺寸三邊合計 ≤158 cm。</div>
+</div>
+
+<div class="card">
+<div class="section-title">🔋 行動電源與電子設備</div>
+<ul class="section-content" style="padding-left:20px;margin:0">
+<li>行動電源<strong>只能放隨身行李</strong>，禁止託運</li>
+<li>每人最多 2 顆，單顆額定能量 ≤100Wh</li>
+<li>機上<strong>禁止使用與充電</strong></li>
+<li>備用鋰電池、電子煙、打火機等也不可託運</li>
+</ul>
+</div>
+
+<div class="card">
+<div class="section-title">💰 超額行李（參考）</div>
+<p class="section-content">台灣出發至亞洲／關島區域，每多 1 件現場約 USD 150；起飛前 3 小時以上於官網或 App 預購可享 8 折（約 USD 120）。實際費用以星宇官網當下公告為準。</p>
+<div class="tip-box">出發前 3 小時以前預購超額行李較划算，現場加購較貴。</div>
+</div>
+
+<div class="card">
+<div class="section-title">📌 實用提醒</div>
+<ul class="section-content" style="padding-left:20px;margin:0">
+<li>液體、膠狀、噴霧類：單瓶 ≤100ml，全部裝在 1 公升透明夾鏈袋內</li>
+<li>刀剪、尖銳物品、自拍棒／腳架等請放託運</li>
+<li>護照、貴重物品、藥品、行動電源務必放隨身</li>
+<li>建議出發前用行李秤確認重量，避免現場超重</li>
+</ul>
+</div>
+</div>
+
+<div id="order" class="tab-content">
+<div class="card">
+<span class="day-tag">家庭點餐</span>
+<h3 class="day-title">🍽️ 餐廳尚未決定</h3>
+<p class="section-content">目前東京行程的餐廳還沒定，點餐功能先預留架構。之後確定要去的餐廳（例如一蘭、一風堂、壽司店、燒肉等）後，可以把菜單補進來，全家人就能即時同步點餐清單。</p>
+</div>
+
+<div class="card">
+<div class="section-title">⚙️ 連線設定（之後啟用）</div>
+<label class="tool-label">Worker API 網址</label>
+<div class="tool-field" style="margin-bottom:12px">
+<input type="text" id="orderApiUrl" placeholder="https://你的-worker.xxx.workers.dev" value="">
+</div>
+<label class="tool-label">你的名字／代號</label>
+<div class="tool-field" style="margin-bottom:12px">
+<input type="text" id="orderPersonName" placeholder="例如：爸爸、小明" value="">
+</div>
+<button class="btn" onclick="alert('餐廳確定後再啟用同步功能')">儲存設定</button>
+<p class="hint">與美西行程相同機制：設定同一個 Worker 網址後，全家人的點餐會即時同步。</p>
+</div>
+
+<div class="card">
+<div class="section-title">📋 目前狀態</div>
+<p class="section-content">尚未加入任何餐廳菜單。確定餐廳後告訴我，我可以幫你補上對應的點餐選項（像 In-N-Out、Panda 那樣的結構）。</p>
+</div>
+</div>
+
 <script>
 const API = "https://japan-travel.cylin-tw1-sc.workers.dev";
 const DATA = [
@@ -227,6 +395,16 @@ cd.textContent=CODE?"代碼："+CODE+"（切換）":"設定代碼";
 cd.onclick=()=>{const c=askCode();if(c){localStorage.setItem("tokyo-trip-code",c);location.reload()}};
 render();
 if(SYNC)fetch(API+"/api/state?code="+CODE).then(r=>r.json()).then(s=>{if(s&&typeof s==="object"){S=s;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render();st("已同步 ✓")}}).catch(()=>st("離線中，僅存本機"));
+
+function speakJa(text){
+  if(!window.speechSynthesis){alert('此裝置不支援語音朗讀');return;}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='ja-JP';
+  u.rate=0.9;
+  window.speechSynthesis.speak(u);
+}
+
 </script>
 </body>
 </html>
