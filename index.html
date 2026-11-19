@@ -73,6 +73,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .tool-field input{width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid #dadce0;font-size:.95rem;background:#fafbfc}
 .hint{font-size:.78rem;color:var(--text-sub);margin-top:8px;line-height:1.5}
 
+
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:var(--primary);color:#fff;border-radius:50%;font-size:.8rem;font-weight:700;margin-right:8px;flex-shrink:0}
+.step-row{display:flex;align-items:flex-start;gap:4px;margin-bottom:12px;font-size:.92rem;line-height:1.55}
+.warn-box{background:#fce8e6;border-left:4px solid #c5221f;padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.88rem;line-height:1.55}
+.ok-box{background:#e6f4ea;border-left:4px solid #137333;padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.88rem;line-height:1.55}
+
 </style>
 </head>
 <body>
@@ -86,6 +92,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 <button class="tab-btn" data-tab="stay">🏨 住宿</button>
 <button class="tab-btn" data-tab="japanese">🗣️ 實用日文</button>
 <button class="tab-btn" data-tab="luggage">🧳 行李須知</button>
+<button class="tab-btn" data-tab="taxfree">💴 退稅須知</button>
 <button class="tab-btn" data-tab="order">🍽️ 家庭點餐</button>
 </div>
 </div>
@@ -268,6 +275,80 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 <div class="card">
 <div class="section-title">📋 目前狀態</div>
 <p class="section-content">尚未加入任何餐廳菜單。確定餐廳後告訴我，我可以幫你補上對應的點餐選項（像 In-N-Out、Panda 那樣的結構）。</p>
+</div>
+</div>
+
+
+<div id="taxfree" class="tab-content">
+<div class="card">
+<span class="day-tag">2026/11/1 起新制</span>
+<h3 class="day-title">💴 日本退稅攻略</h3>
+<p class="section-content">你這趟行程（2027/1）全面適用「先付含稅價 → 出境退稅」新制。以下整理重點與流程。</p>
+</div>
+
+<div class="card">
+<div class="section-title">📌 新制重點一次看</div>
+<table class="luggage-table">
+<tr><th>項目</th><th>內容</th></tr>
+<tr><td>結帳時</td><td>先付<strong>含稅全額</strong>（不再當場免稅）</td></tr>
+<tr><td>退稅時間</td><td>出境時海關確認後才退</td></tr>
+<tr><td>門檻</td><td>同店同日<strong>未稅 5,000 日圓以上</strong></td></tr>
+<tr><td>商品分類</td><td>一般品＋消耗品合併計算，取消 50 萬上限</td></tr>
+<tr><td>包裝</td><td>取消密封袋，但境內仍不可使用／食用</td></tr>
+<tr><td>期限</td><td>購買日起 <strong>90 天內</strong>完成出境確認</td></tr>
+<tr><td>消費稅率</td><td>一般商品 10%，部分食品 8%</td></tr>
+</table>
+</div>
+
+<div class="card">
+<div class="section-title">✅ 誰可以退稅？</div>
+<ul class="section-content" style="padding-left:20px;margin:0">
+<li>外國籍（台灣護照適用）</li>
+<li>在留資格為「短期滞在」（觀光免簽就是）</li>
+<li>入境日本未滿 6 個月</li>
+<li>非日本居住者</li>
+</ul>
+<div class="ok-box">建議入境時走人工櫃檯蓋章，或確認 Visit Japan Web 有正確登錄，方便日後證明。</div>
+</div>
+
+<div class="card">
+<div class="section-title">🛒 完整退稅流程</div>
+
+<div class="step-row"><span class="step-num">1</span><div><strong>店內購物</strong><br>找有「Japan Tax-free Shop」標誌的店。結帳時出示<strong>護照正本</strong>，支付含稅全額。店員會登錄系統並給你收據（通常有 QR Code）。依指示登記退款方式（信用卡／電子錢包等）。</div></div>
+
+<div class="step-row"><span class="step-num">2</span><div><strong>旅途中保管</strong><br>所有免稅商品與收據都要保留。同一張收據上只要有一件被使用、吃掉或遺失，整張可能無法退稅。</div></div>
+
+<div class="step-row"><span class="step-num">3</span><div><strong>出境當天（最重要）</strong><br><strong>一定要在託運行李之前完成！</strong><br>到機場國際線出發大廳（報到櫃檯前）找「免稅手續終端機」，掃描護照。成田機場有支援，也可使用 Visit Japan Web 線上確認。<br>綠色＝完成；紅色＝需到海關檢查區出示商品。</div></div>
+
+<div class="step-row"><span class="step-num">4</span><div><strong>實際拿到退款</strong><br>由店家或退稅業者（如 J-TaxRefund、Global Blue 等）處理，退回信用卡或其他方式。部分會收手續費，結帳時可先問清楚。</div></div>
+</div>
+
+<div class="card">
+<div class="section-title">⚠️ 重要注意事項</div>
+<div class="warn-box">
+• 必須帶<strong>護照正本</strong>（照片／影本通常不行）<br>
+• <strong>先辦退稅確認，再託運行李</strong>，順序反了就無法辦理<br>
+• 購買後 90 天內必須出境並完成確認<br>
+• 在日本使用或食用免稅商品就不能退<br>
+• 不同店的消費不能合併計算門檻
+</div>
+</div>
+
+<div class="card">
+<div class="section-title">🗣️ 退稅相關日文</div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">免税でお願いします</span><button class="speak-btn" onclick="speakJa('免税でお願いします')">🔊</button></div><div class="phrase-zh">請幫我辦理免稅／退稅</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">パスポートを見せます</span><button class="speak-btn" onclick="speakJa('パスポートを見せます')">🔊</button></div><div class="phrase-zh">我出示護照</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">税込みでいくらですか？</span><button class="speak-btn" onclick="speakJa('税込みでいくらですか')">🔊</button></div><div class="phrase-zh">含稅多少錢？</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">レシートをください</span><button class="speak-btn" onclick="speakJa('レシートをください')">🔊</button></div><div class="phrase-zh">請給我收據</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">返金はどのようになりますか？</span><button class="speak-btn" onclick="speakJa('返金はどのようになりますか')">🔊</button></div><div class="phrase-zh">退款會怎麼處理？</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">手数料はかかりますか？</span><button class="speak-btn" onclick="speakJa('手数料はかかりますか')">🔊</button></div><div class="phrase-zh">有手續費嗎？</div></div>
+<div class="phrase-item"><div class="phrase-en-row"><span class="phrase-en">クレジットカードに返金できますか？</span><button class="speak-btn" onclick="speakJa('クレジットカードに返金できますか')">🔊</button></div><div class="phrase-zh">可以退到信用卡嗎？</div></div>
+</div>
+
+<div class="card">
+<div class="section-title">✈️ 成田機場提醒</div>
+<p class="section-content">回程從成田（NRT）出發。請在<strong>報到／託運前</strong>先到出發大廳的免稅手續機台完成確認。成田有支援 Visit Japan Web 線上確認，可減少排隊。</p>
+<div class="tip-box">建議出發當天預留較充裕時間，避免因退稅排隊而趕飛機。</div>
 </div>
 </div>
 
