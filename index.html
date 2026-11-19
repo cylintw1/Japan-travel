@@ -35,6 +35,7 @@ button{margin:8px auto;display:block;background:none;border:1px solid var(--ln);
 <main>
 <div id="app"></div>
 <button id="rs">全部取消勾選</button>
+<button id="cd"></button>
 <div id="st"></div>
 </main>
 <script>
@@ -101,16 +102,20 @@ const DATA = [
 "原子筆（填寫紙本單據備用）",
 "幾包符合規定的小零食（注意肉類製品不可攜帶入境）"]]
 ];
-const KEY="tokyo-trip-checks";
+let CODE=localStorage.getItem("tokyo-trip-code")||"";
+function askCode(){return (prompt("請輸入你的代碼（數字或英文）。在其他裝置輸入同一個代碼，就能看到自己的清單。",CODE)||"").trim().replace(/[^A-Za-z0-9]/g,"").slice(0,20)}
+if(!CODE){CODE=askCode();if(CODE)localStorage.setItem("tokyo-trip-code",CODE)}
+const SYNC=API&&CODE;
+const KEY="tokyo-trip-checks:"+(CODE||"local");
 let S={}, total=0, timer;
 try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
 const st=t=>document.getElementById("st").textContent=t;
 function save(){
   try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
-  if(!API)return;
+  if(!SYNC)return;
   clearTimeout(timer);
   timer=setTimeout(async()=>{
-    try{const r=await fetch(API+"/api/state",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(S)});
+    try{const r=await fetch(API+"/api/state?code="+CODE,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(S)});
       st(r.ok?"已同步 ✓":"同步失敗")}catch(e){st("離線中，僅存本機")}
   },400);
 }
@@ -140,8 +145,10 @@ function render(){
   progress();
 }
 rs.onclick=()=>{if(confirm("確定全部取消勾選？")){S={};save();render()}};
+cd.textContent=CODE?"代碼："+CODE+"（切換）":"設定代碼";
+cd.onclick=()=>{const c=askCode();if(c){localStorage.setItem("tokyo-trip-code",c);location.reload()}};
 render();
-if(API)fetch(API+"/api/state").then(r=>r.json()).then(s=>{if(s&&typeof s==="object"){S=s;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render();st("已同步 ✓")}}).catch(()=>st("離線中，僅存本機"));
+if(SYNC)fetch(API+"/api/state?code="+CODE).then(r=>r.json()).then(s=>{if(s&&typeof s==="object"){S=s;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render();st("已同步 ✓")}}).catch(()=>st("離線中，僅存本機"));
 </script>
 </body>
 </html>
