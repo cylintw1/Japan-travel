@@ -93,6 +93,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .fold{margin-top:8px;border:1px solid #e0e0e0;border-radius:10px;padding:0 12px}
 .fold summary{cursor:pointer;font-weight:700;color:var(--primary-dark);padding:11px 0;font-size:.95rem}
 .fold[open] summary{border-bottom:1px solid #eee;margin-bottom:8px}
+.map-embed{width:100%;height:220px;border:0;border-radius:10px;margin:8px 0;background:#e8eaed}
+.time-tag{display:inline-block;background:#e8f0fe;color:#1a73e8;padding:2px 8px;border-radius:6px;font-size:.78rem;font-weight:700;margin-right:4px}
+.walk-tag{background:#e6f4ea;color:#137333}
+.ride-tag{background:#fef7e0;color:#b06000}
 .star{color:#ea8600;font-weight:700}
 </style>
 </head>
@@ -455,62 +459,172 @@ const DAY1=`
 <div class="section"><p class="section-title">🧥 穿搭建議</p>
 <p class="section-content">台北 14–20°C｜長袖＋外套<br>東京 0–10°C｜發熱衣＋長袖＋羽絨外套</p></div>
 <div class="divider"></div>
-<div class="section"><p class="section-title">🚗 抵達民宿</p>
-<div class="tl"><div class="t">19:00</div><div class="d">抵達成田機場</div></div>
-<div class="tl"><div class="t">20:00</div><div class="d">成田機場第二航廈出發<small>車程約 1 小時 15 分</small></div></div>
-<div class="tl"><div class="t">21:30</div><div class="d">抵達民宿，之後自由活動</div></div></div>
+<div class="section"><p class="section-title">🗺️ 今日路線圖（含時間與交通）</p>
+<svg viewBox="0 0 360 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;height:auto;display:block;margin:8px auto;background:#f8fafc;border-radius:12px;border:1px solid #e0e0e0">
+  <line x1="40" y1="30" x2="40" y2="200" stroke="#c5d4f0" stroke-width="4"/>
+  <circle cx="40" cy="32" r="11" fill="#1a73e8"/>
+  <text x="40" y="36" text-anchor="middle" fill="#fff" font-size="9">✈</text>
+  <text x="60" y="28" font-size="12" font-weight="700" fill="#202124">成田機場 NRT</text>
+  <text x="60" y="42" font-size="10" fill="#5f6368">19:00 抵達　JX804</text>
+
+  <circle cx="40" cy="90" r="11" fill="#ea8600"/>
+  <text x="40" y="94" text-anchor="middle" fill="#fff" font-size="9">→</text>
+  <text x="60" y="86" font-size="12" font-weight="700" fill="#202124">第二航廈出發</text>
+  <text x="60" y="100" font-size="10" fill="#5f6368">約 20:00　京成／轉乘　門到門約 75 分</text>
+  <text x="60" y="114" font-size="9.5" fill="#5f6368">可先在機場購買 Suica／Pasmo</text>
+
+  <circle cx="40" cy="155" r="11" fill="#137333"/>
+  <text x="40" y="159" text-anchor="middle" fill="#fff" font-size="9">🏠</text>
+  <text x="60" y="151" font-size="12" font-weight="700" fill="#202124">抵達民宿（立石／青砥）</text>
+  <text x="60" y="165" font-size="10" fill="#5f6368">約 21:30　之後自由活動</text>
+
+  <rect x="20" y="195" width="320" height="70" rx="10" fill="#fff" stroke="#e0e0e0"/>
+  <text x="32" y="215" font-size="11" font-weight="700" fill="#202124">晚上可步行（買隔天早餐）</text>
+  <text x="32" y="233" font-size="10" fill="#5f6368">A 豚燻　歩行約5分　至00:00</text>
+  <text x="32" y="249" font-size="10" fill="#5f6368">B LIVRE 青砥　歩行約8分　至23:00　｜　C Summit 區公所前　歩行約8分　至00:00</text>
+</svg>
+</div>
 <div class="divider"></div>
-<div class="section"><p class="section-title">🏠 民宿定位</p>
-<div class="spot"><b>Tateishi Nanachome Park 立石七丁目公園</b>${ML('開啟地圖','ALhk9xkHZ22zWE8JA')}</div></div>
-<div class="divider"></div>
-<div class="section"><p class="section-title"><span class="badge badge-tip">🍶 自由活動選擇（可以買隔天早餐）</span></p>
-<div class="spot"><b>A. 居酒屋 🏮 豚燻</b><span class="sub">步行 5 分鐘，營業至 00:00</span><br>${ML('開啟地圖','3WRMaYvWvN6D3VGeA')}</div>
-<div class="spot"><b>B. 超市 🛒 LIVRE KEISEI Aoto リブレ京成 青砥駅前店</b><span class="sub">步行 8 分鐘，營業至 23:00</span><br>${ML('開啟地圖','WKExaoT2d9i9jFhT8')}</div>
-<div class="spot"><b>C. 超市 🛒 Summit Store Katsushika City Hall サミットストア 葛飾区役所前店</b><span class="sub">步行 8 分鐘，營業至 00:00</span><br>${ML('開啟地圖','42Vc9kFGXtmTGUpW6')}</div></div>`;
+<div class="section"><p class="section-title">🏠 民宿與附近</p>
+<div class="spot"><b>定位參考：立石七丁目公園</b><br>${ML('開啟地圖','ALhk9xkHZ22zWE8JA')}</div>
+<div class="spot"><b>A. 居酒屋 🏮 豚燻</b><span class="sub"><span class="time-tag walk-tag">步行約 5 分</span>營業至 00:00</span><br>${ML('開啟地圖','3WRMaYvWvN6D3VGeA')}</div>
+<div class="spot"><b>B. 超市 🛒 LIVRE KEISEI Aoto</b><span class="sub"><span class="time-tag walk-tag">步行約 8 分</span>營業至 23:00</span><br>${ML('開啟地圖','WKExaoT2d9i9jFhT8')}</div>
+<div class="spot"><b>C. 超市 🛒 Summit 葛飾区役所前</b><span class="sub"><span class="time-tag walk-tag">步行約 8 分</span>營業至 00:00</span><br>${ML('開啟地圖','42Vc9kFGXtmTGUpW6')}</div></div>`;
 
 const DAY2=`
 <div class="divider"></div>
-<div class="section"><p class="section-title">🗺️ 行程規劃</p>
-<div class="tl"><div class="t">08:00–08:30</div><div class="d">民宿 ➔ 龜有車站 <span class="fn">註1</span></div></div>
-<div class="tl"><div class="t">08:30–12:30</div><div class="d">無厘頭鬧劇烏龍派出所之旅<small>龜有車站 30m ➔ 龜有觀光案內所 30m ➔ Ario 百貨 3F 1hr ➔ 龜有公園 40m <span class="star">⭐拍團體照</span> ➔ 香取神社 40m <span class="star">⭐拍團體照</span> ➔ 烏龍派出所紀念館 40m</small></div></div>
-<div class="tl"><div class="t">12:30–13:00</div><div class="d">龜有 ➔ KS49 京成立石站 <span class="fn">註2</span></div></div>
-<div class="tl"><div class="t">13:00–13:30</div><div class="d">KS49 京成立石站 ➔ 淺草西參道商店街 <span class="fn">註3</span></div></div>
-<div class="tl"><div class="t">13:30–17:00</div><div class="d">江戶風情淺草漫遊<small>西參道商店街自由午餐 90m ➔ 淺草寺 1hr <span class="star">⭐在雷門拍團體照</span><br>（早點結束可以提早去上野）</small></div></div>
-<div class="tl"><div class="t">16:30–17:00</div><div class="d">淺草 ➔ 上野 <span class="fn">註4</span></div></div>
-<div class="tl"><div class="t">17:00–18:00</div><div class="d">晚餐：一蘭拉麵、牛肉堡</div></div>
-<div class="tl"><div class="t">18:00–19:30</div><div class="d">阿美橫町藥妝零食補貨囉</div></div>
-<div class="tl"><div class="t">19:30–20:00</div><div class="d">上野 ➔ 民宿 <span class="fn">註5</span></div></div></div>
+<div class="section"><p class="section-title">🗺️ 今日路線圖（含時間與交通）</p>
+<svg viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px;height:auto;display:block;margin:8px auto;background:#f8fafc;border-radius:12px;border:1px solid #e0e0e0">
+  <line x1="40" y1="28" x2="40" y2="500" stroke="#c5d4f0" stroke-width="4"/>
 
-<details class="fold"><summary>🚃 交通方式（註1–5）</summary>
-<div class="spot"><b>註1　🚌 民宿 ➔ 龜有車站</b>民宿門口就有公車站牌，在葛飾文化會館站搭乘「新小 53」往龜有方向，在龜有站（龜有駅）下車，步行 2 分鐘到龜有車站。<br><span class="sub">車票 ¥230｜總通行時間 21 分（車次 08:04 / 08:20）</span></div>
-<div class="spot"><b>註2　🚌 龜有車站 ➔ 京成立石站</b>回到龜有站公車下車的地點，在龜有站（龜有駅）搭乘「新小 53」往新小岩站東北廣場方向，在立石站入口（立石駅入口）13 號下車，步行 3 分鐘到京成立石站。<br><span class="sub">車票 ¥230｜總通行時間 21 分（車次 12:30 / 12:45）</span></div>
-<div class="spot"><b>註3　🚇 KS49 京成立石站 ➔ 淺草西參道商店街</b>搭乘京成押上線（藍線），在 1 號月台 South1 搭乘往「押上・淺草」方向列車，在 A18 淺草站下車，從 A4 出站，步行 14 分鐘至西參道商店街。<br><span class="sub">車票 ¥345｜總通行時間 16 分</span></div>
-<div class="spot"><b>註4　🚇 淺草寺 ➔ 上野阿美橫町</b>從淺草寺步行 3 分鐘至 G19 淺草站，從 3 號出口入站搭乘銀座線（橘線），搭乘往「澀谷」方向列車，★第二節車廂離出口最近，在 G16 上野站下車，從 7 號出口出站，步行 5 分鐘至阿美橫町。<br><span class="sub">車票 ¥178｜總通行時間 13 分</span></div>
-<div class="spot"><b>註5　🚇 上野阿美橫町 ➔ 民宿</b>阿美橫町步行 4 分鐘至 KS01 京成上野站，搭乘京成本線（藍線），在池之端口搭乘「成田機場」方向列車，在 KS09 青砥站下車，步行 11 分鐘到民宿。<br><span class="sub">車票 ¥272｜總通行時間 28 分</span></div>
-</details>
+  <circle cx="40" cy="32" r="11" fill="#137333"/>
+  <text x="40" y="36" text-anchor="middle" fill="#fff" font-size="9">🏠</text>
+  <text x="60" y="26" font-size="12" font-weight="700" fill="#202124">民宿出發　註1</text>
+  <text x="60" y="40" font-size="10" fill="#5f6368">08:00　公車 新小53 → 龜有　約21分 ¥230</text>
 
-<details class="fold"><summary>📍 龜有景點地圖</summary>
-<div class="spot"><b>龜有駅</b>${ML('開啟地圖','DTsVXVUEV4aJLsXC9')}</div>
-<div class="spot"><b>龜有觀光案内所</b><span class="star">領取阿兩地圖 🗺️</span><br>${ML('開啟地圖','1Gj4nzvHUmspfJfg9')}</div>
-<div class="spot"><b>Ario 龜有 アリオ亀有</b>${ML('開啟地圖','tg1KViMWY6eQnpNj6')}</div>
-<div class="spot"><b>龜有公園</b>${ML('開啟地圖','zeGmrP4cYNqWWBHi7')}</div>
-<div class="spot"><b>香取神社</b><span class="sub">3-chōme-42-24 Kameari, Katsushika City</span><br>${ML('開啟地圖','mAMSjFsSfTKKuf7F6')}</div>
-<div class="spot"><b>Kochikame Memorial Museum こち亀記念館</b>${ML('開啟地圖','g47MAX9XzwnaThnKA')}</div>
-</details>
+  <circle cx="40" cy="78" r="11" fill="#1a73e8"/>
+  <text x="40" y="82" text-anchor="middle" fill="#fff" font-size="9">①</text>
+  <text x="60" y="70" font-size="12" font-weight="700" fill="#202124">龜有・烏龍派出所之旅</text>
+  <text x="60" y="84" font-size="10" fill="#5f6368">08:30–12:30　步行串聯</text>
+  <text x="60" y="97" font-size="9.5" fill="#5f6368">案內所 → Ario（歩4–6分）→ 公園 → 神社 → 紀念館（歩3分）</text>
 
-<details class="fold"><summary>📍 淺草景點地圖</summary>
-<div class="spot"><b>🛍️ 淺草西參道商店街</b>${ML('開啟地圖','6kvnTXTF622AttsTA')}</div>
-<div class="spot"><b>⛩️ 淺草寺</b>${ML('開啟地圖','4P3NrA4o2mcSzqbx7')}</div>
-</details>
+  <circle cx="40" cy="135" r="11" fill="#ea8600"/>
+  <text x="40" y="139" text-anchor="middle" fill="#fff" font-size="9">②</text>
+  <text x="60" y="131" font-size="12" font-weight="700" fill="#202124">龜有 → 京成立石　註2</text>
+  <text x="60" y="145" font-size="10" fill="#5f6368">12:30–13:00　公車 新小53　約21分 ¥230</text>
 
-<details class="fold"><summary>📍 上野：餐廳與購物</summary>
-<div class="spot"><b>❶ 🍜 一蘭拉麵　ICHIRAN Ueno (Atre) 一蘭 アトレ上野山下口店</b>${ML('開啟地圖','DJ2aa4Tvh2BH8WFn8')}</div>
-<div class="spot"><b>🍔 鐵板起司漢堡　American Diner Andra</b>${ML('開啟地圖','FAuBArXYxJVGRxT48')}</div>
-<div class="spot"><b>藥妝店：❷ OS Drug 上野店 OSドラッグ 上野店</b>⚠️ 不能退稅，但比退稅便宜<br>⚠️ 只收現金<br>⚠️ 營業時間 10:00–19:45<br><span class="sub">其他藥妝附近也有 Sun Drug / 松本清 / 大國 / Sugi 杉</span><br>${ML('開啟地圖','dkgswzF5p6xwTfbCA')}</div>
-<div class="spot"><b>零食店：❹ Niki no Kashi 二木の菓子 第一営業所</b>${ML('開啟地圖','4YL3tfnae6nN7kh56')}</div>
-<div class="spot"><b>玩具店：❸ Sanrio Gift Gate 上野店</b>${ML('開啟地圖','mQM39LHozFSPJ7eE6')}</div>
-<div class="spot"><b>玩具店：❺ Yamashiroya 上野 ヤマシロヤ</b>⚠️ 玩具不貴也不便宜，但種類很多，可以退稅，戰鬥陀螺可以在這邊找看看<br>${ML('開啟地圖','TKdMmis7AvgfyQuY6')}</div>
+  <circle cx="40" cy="185" r="11" fill="#1a73e8"/>
+  <text x="40" y="189" text-anchor="middle" fill="#fff" font-size="9">③</text>
+  <text x="60" y="177" font-size="12" font-weight="700" fill="#202124">京成立石 → 淺草　註3</text>
+  <text x="60" y="191" font-size="10" fill="#5f6368">13:00–13:30　押上線直通　車10–11分＋步行　約¥345</text>
+  <text x="60" y="204" font-size="9.5" fill="#5f6368">A18 淺草站 A4 出 → 西參道</text>
+
+  <circle cx="40" cy="240" r="11" fill="#c5221f"/>
+  <text x="40" y="244" text-anchor="middle" fill="#fff" font-size="9">④</text>
+  <text x="60" y="236" font-size="12" font-weight="700" fill="#202124">淺草漫遊</text>
+  <text x="60" y="250" font-size="10" fill="#5f6368">13:30–17:00　西參道午餐 → 淺草寺／雷門</text>
+
+  <circle cx="40" cy="290" r="11" fill="#1a73e8"/>
+  <text x="40" y="294" text-anchor="middle" fill="#fff" font-size="9">⑤</text>
+  <text x="60" y="286" font-size="12" font-weight="700" fill="#202124">淺草 → 上野阿美橫　註4</text>
+  <text x="60" y="300" font-size="10" fill="#5f6368">16:30–17:00　銀座線約5分　G16 7號出口　約¥178</text>
+
+  <circle cx="40" cy="345" r="11" fill="#ea8600"/>
+  <text x="40" y="349" text-anchor="middle" fill="#fff" font-size="9">⑥</text>
+  <text x="60" y="341" font-size="12" font-weight="700" fill="#202124">晚餐＋阿美橫補貨</text>
+  <text x="60" y="355" font-size="10" fill="#5f6368">17:00–19:30　一蘭／漢堡 → 藥妝零食</text>
+
+  <circle cx="40" cy="400" r="11" fill="#137333"/>
+  <text x="40" y="404" text-anchor="middle" fill="#fff" font-size="9">🏠</text>
+  <text x="60" y="396" font-size="12" font-weight="700" fill="#202124">上野 → 民宿　註5</text>
+  <text x="60" y="410" font-size="10" fill="#5f6368">19:30–20:00　京成上野→青砥＋歩約11分　約¥272</text>
+
+  <rect x="16" y="440" width="328" height="100" rx="10" fill="#fff" stroke="#e0e0e0"/>
+  <text x="28" y="460" font-size="11" font-weight="700" fill="#202124">圖例</text>
+  <circle cx="32" cy="480" r="5" fill="#1a73e8"/><text x="42" y="483" font-size="10" fill="#5f6368">電車</text>
+  <circle cx="90" cy="480" r="5" fill="#ea8600"/><text x="100" y="483" font-size="10" fill="#5f6368">公車</text>
+  <circle cx="148" cy="480" r="5" fill="#c5221f"/><text x="158" y="483" font-size="10" fill="#5f6368">遊覽</text>
+  <circle cx="210" cy="480" r="5" fill="#137333"/><text x="220" y="483" font-size="10" fill="#5f6368">民宿</text>
+  <text x="28" y="508" font-size="9.5" fill="#5f6368">點下方「交通方式」看註1–5詳細步驟與地圖連結。</text>
+  <text x="28" y="524" font-size="9.5" fill="#5f6368">回程請搭「京成上野」，不要走去 JR 上野。</text>
+</svg>
+</div>
+
+<details class="fold"><summary>🚃 交通方式（註1–5）詳細步驟與地圖</summary>
+
+<div class="tip-box">建議全程使用 <b>Suica／Pasmo</b>。票價為成人 IC 參考價。</div>
+
+<div class="spot"><b>註1　🚌 民宿 → 龜有駅　08:00–08:30</b>
+<span class="sub">門到門約 <b>21 分</b>｜約 ¥230</span>
+<div style="margin-top:6px;line-height:1.65">
+① 民宿門口公車站「<b>葛飾文化會館</b>」候車<br>
+② 搭京成巴士「<b>新小 53</b>」→ 方向「龜有」<br>
+③ 「<b>龜有駅</b>」下車 → <span class="time-tag walk-tag">步行約 2 分</span>到 JR 龜有駅<br>
+<span class="time-tag ride-tag">公車約 15–18 分</span>　班次例 08:04／08:20
+</div>
+<div style="margin-top:8px">
+<div class="spot" style="margin:6px 0"><b>龜有駅</b> ${ML('地圖','DTsVXVUEV4aJLsXC9')}</div>
+<div class="spot" style="margin:6px 0"><b>觀光案內所</b>（領阿兩地圖） ${ML('地圖','1Gj4nzvHUmspfJfg9')}</div>
+<div class="spot" style="margin:6px 0"><b>Ario 龜有</b>（駅歩 4–6 分） ${ML('地圖','tg1KViMWY6eQnpNj6')}</div>
+<div class="spot" style="margin:6px 0"><b>龜有公園</b> ${ML('地圖','zeGmrP4cYNqWWBHi7')}</div>
+<div class="spot" style="margin:6px 0"><b>香取神社</b> ${ML('地圖','mAMSjFsSfTKKuf7F6')}</div>
+<div class="spot" style="margin:6px 0"><b>こち亀記念館</b>（駅歩約 3 分，建議預約） ${ML('地圖','g47MAX9XzwnaThnKA')}</div>
+</div></div>
+
+<div class="spot"><b>註2　🚌 龜有 → 京成立石　12:30–13:00</b>
+<span class="sub">門到門約 <b>21 分</b>｜約 ¥230</span>
+<div style="margin-top:6px;line-height:1.65">
+① 龜有駅公車站搭「<b>新小 53</b>」→「新小岩／東北廣場」方向<br>
+② 「<b>立石駅入口</b>」下車 → <span class="time-tag walk-tag">步行約 3 分</span>至 <b>京成立石（KS49）</b><br>
+<span class="time-tag ride-tag">公車約 15–18 分</span>　班次例 12:30／12:45
+</div></div>
+
+<div class="spot"><b>註3　🚇 京成立石 → 淺草西參道　13:00–13:30</b>
+<span class="sub">門到門約 <b>20–25 分</b>｜IC 約 ¥345</span>
+<div style="margin-top:6px;line-height:1.65">
+① <b>京成立石</b> 1 號月台，京成押上線往「<b>押上・淺草／西馬込</b>」<br>
+② 多可直通都營淺草線，<b>不必下車換乘</b><br>
+③ 「<b>淺草（A18）</b>」下車 → <b>A4 出口</b> → 步行至西參道／淺草寺<br>
+<span class="time-tag ride-tag">車程約 10–11 分</span><span class="time-tag walk-tag">出站＋步行約 8–14 分</span>
+</div>
+<div style="margin-top:8px">
+<div class="spot" style="margin:6px 0"><b>西參道商店街</b>（自駅約 8–10 分） ${ML('地圖','6kvnTXTF622AttsTA')}</div>
+<div class="spot" style="margin:6px 0"><b>淺草寺／雷門</b> ${ML('地圖','4P3NrA4o2mcSzqbx7')}</div>
+</div></div>
+
+<div class="spot"><b>註4　🚇 淺草 → 上野阿美橫　16:30–17:00</b>
+<span class="sub">門到門約 <b>12–15 分</b>｜約 ¥178–180</span>
+<div style="margin-top:6px;line-height:1.65">
+① 淺草寺 → <span class="time-tag walk-tag">歩約 3 分</span>至「<b>淺草（G19）銀座線</b>」<br>
+② 銀座線往「<b>澀谷</b>」→「<b>上野（G16）</b>」<b>7 號出口</b><br>
+③ 出站後 <span class="time-tag walk-tag">歩約 1–5 分</span>進阿美橫<br>
+<span class="time-tag ride-tag">銀座線約 5 分</span>
+</div>
+<div style="margin-top:8px">
+<div class="spot" style="margin:6px 0"><b>一蘭 アトレ上野</b> ${ML('地圖','DJ2aa4Tvh2BH8WFn8')}</div>
+<div class="spot" style="margin:6px 0"><b>Andra 漢堡</b> ${ML('地圖','FAuBArXYxJVGRxT48')}</div>
+<div class="spot" style="margin:6px 0"><b>OS Drug 上野</b>（多現金／偏便宜） ${ML('地圖','dkgswzF5p6xwTfbCA')}</div>
+<div class="spot" style="margin:6px 0"><b>二木の菓子</b> ${ML('地圖','4YL3tfnae6nN7kh56')}</div>
+<div class="spot" style="margin:6px 0"><b>Sanrio Gift Gate</b> ${ML('地圖','mQM39LHozFSPJ7eE6')}</div>
+<div class="spot" style="margin:6px 0"><b>Yamashiroya</b>（可退稅） ${ML('地圖','TKdMmis7AvgfyQuY6')}</div>
+</div></div>
+
+<div class="spot"><b>註5　🚇 上野 → 民宿　19:30–20:00</b>
+<span class="sub">門到門約 <b>28 分</b>｜約 ¥272</span>
+<div style="margin-top:6px;line-height:1.65">
+① 阿美橫 → <span class="time-tag walk-tag">歩約 4 分</span>至「<b>京成上野（KS01）</b>」<br>
+② 京成本線往成田／高砂等（月台需含「青砥」）<br>
+③ 「<b>青砥（KS09）</b>」下車 → <span class="time-tag walk-tag">歩約 11 分</span>回民宿<br>
+<span class="time-tag ride-tag">電車約 14–18 分</span>
+</div></div>
+
+<div class="ok-box">
+<b>省時小提示</b><br>
+• 龜有景點多可步行串聯<br>
+• 回民宿搭「京成上野」不是 JR 上野
+</div>
 </details>`;
+
 const DAYS=[
 ["1/23 (六)","台灣桃園 ➔ 東京成田 ➔ 民宿","搭乘 JX804（15:00 起飛），19:00 抵達成田機場 NRT，驅車前往民宿，21:30 抵達後自由活動。",DAY1],
 ["1/24 (日)","民宿 ➔ 龜有（尋找兩津勘吉）➔ 淺草江戶風情 ➔ 上野購物","龜有烏龍派出所之旅，下午逛淺草西參道商店街與淺草寺，傍晚到上野阿美橫町晚餐與補貨。",DAY2],["1/25 (一)","",""],["1/26 (二)","",""],["1/27 (三)","",""],["1/28 (四)","",""],
