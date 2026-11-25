@@ -79,6 +79,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 .warn-box{background:#fce8e6;border-left:4px solid #c5221f;padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.88rem;line-height:1.55}
 .ok-box{background:#e6f4ea;border-left:4px solid #137333;padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.88rem;line-height:1.55}
 
+
+/* 每日行程細節 */
+.map-link{display:inline-block;background:#e6f4ea;color:#137333;padding:5px 12px;border-radius:20px;font-size:.8rem;font-weight:700;text-decoration:none;margin-top:6px}
+.spot{background:#f8f9fa;border-left:4px solid #34a853;padding:10px 12px;border-radius:0 8px 8px 0;margin:8px 0;font-size:.9rem;line-height:1.55}
+.spot b{display:block;color:var(--text-main)}
+.spot .sub{color:var(--text-sub);font-size:.85rem}
+.tl{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #f1f3f4;font-size:.92rem;line-height:1.55}
+.tl:last-child{border-bottom:none}
+.tl .t{flex:0 0 94px;font-weight:700;color:var(--primary)}
+.tl .d small{display:block;color:var(--text-sub);font-size:.85rem;margin-top:2px}
+.fn{color:#e91e63;font-weight:700;font-size:.72rem;vertical-align:super}
+.fold{margin-top:8px;border:1px solid #e0e0e0;border-radius:10px;padding:0 12px}
+.fold summary{cursor:pointer;font-weight:700;color:var(--primary-dark);padding:11px 0;font-size:.95rem}
+.fold[open] summary{border-bottom:1px solid #eee;margin-bottom:8px}
+.star{color:#ea8600;font-weight:700}
 </style>
 </head>
 <body>
@@ -434,9 +449,71 @@ const DATA = [
 "原子筆（填寫紙本單據備用）",
 "幾包符合規定的小零食（注意肉類製品不可攜帶入境）"]]
 ];
+const ML=(t,id)=>'<a class="map-link" target="_blank" rel="noopener" href="https://maps.app.goo.gl/'+id+'?g_st=ic">📍 '+t+'</a>';
+const DAY1=`
+<div class="divider"></div>
+<div class="section"><p class="section-title">🧥 穿搭建議</p>
+<p class="section-content">台北 14–20°C｜長袖＋外套<br>東京 0–10°C｜發熱衣＋長袖＋羽絨外套</p></div>
+<div class="divider"></div>
+<div class="section"><p class="section-title">🚗 抵達民宿</p>
+<div class="tl"><div class="t">19:00</div><div class="d">抵達成田機場</div></div>
+<div class="tl"><div class="t">20:00</div><div class="d">成田機場第二航廈出發<small>車程約 1 小時 15 分</small></div></div>
+<div class="tl"><div class="t">21:30</div><div class="d">抵達民宿，之後自由活動</div></div></div>
+<div class="divider"></div>
+<div class="section"><p class="section-title">🏠 民宿定位</p>
+<div class="spot"><b>Tateishi Nanachome Park 立石七丁目公園</b>${ML('開啟地圖','ALhk9xkHZ22zWE8JA')}</div></div>
+<div class="divider"></div>
+<div class="section"><p class="section-title"><span class="badge badge-tip">🍶 自由活動選擇（可以買隔天早餐）</span></p>
+<div class="spot"><b>A. 居酒屋 🏮 豚燻</b><span class="sub">步行 5 分鐘，營業至 00:00</span><br>${ML('開啟地圖','3WRMaYvWvN6D3VGeA')}</div>
+<div class="spot"><b>B. 超市 🛒 LIVRE KEISEI Aoto リブレ京成 青砥駅前店</b><span class="sub">步行 8 分鐘，營業至 23:00</span><br>${ML('開啟地圖','WKExaoT2d9i9jFhT8')}</div>
+<div class="spot"><b>C. 超市 🛒 Summit Store Katsushika City Hall サミットストア 葛飾区役所前店</b><span class="sub">步行 8 分鐘，營業至 00:00</span><br>${ML('開啟地圖','42Vc9kFGXtmTGUpW6')}</div></div>`;
+
+const DAY2=`
+<div class="divider"></div>
+<div class="section"><p class="section-title">🗺️ 行程規劃</p>
+<div class="tl"><div class="t">08:00–08:30</div><div class="d">民宿 ➔ 龜有車站 <span class="fn">註1</span></div></div>
+<div class="tl"><div class="t">08:30–12:30</div><div class="d">無厘頭鬧劇烏龍派出所之旅<small>龜有車站 30m ➔ 龜有觀光案內所 30m ➔ Ario 百貨 3F 1hr ➔ 龜有公園 40m <span class="star">⭐拍團體照</span> ➔ 香取神社 40m <span class="star">⭐拍團體照</span> ➔ 烏龍派出所紀念館 40m</small></div></div>
+<div class="tl"><div class="t">12:30–13:00</div><div class="d">龜有 ➔ KS49 京成立石站 <span class="fn">註2</span></div></div>
+<div class="tl"><div class="t">13:00–13:30</div><div class="d">KS49 京成立石站 ➔ 淺草西參道商店街 <span class="fn">註3</span></div></div>
+<div class="tl"><div class="t">13:30–17:00</div><div class="d">江戶風情淺草漫遊<small>西參道商店街自由午餐 90m ➔ 淺草寺 1hr <span class="star">⭐在雷門拍團體照</span><br>（早點結束可以提早去上野）</small></div></div>
+<div class="tl"><div class="t">16:30–17:00</div><div class="d">淺草 ➔ 上野 <span class="fn">註4</span></div></div>
+<div class="tl"><div class="t">17:00–18:00</div><div class="d">晚餐：一蘭拉麵、牛肉堡</div></div>
+<div class="tl"><div class="t">18:00–19:30</div><div class="d">阿美橫町藥妝零食補貨囉</div></div>
+<div class="tl"><div class="t">19:30–20:00</div><div class="d">上野 ➔ 民宿 <span class="fn">註5</span></div></div></div>
+
+<details class="fold"><summary>🚃 交通方式（註1–5）</summary>
+<div class="spot"><b>註1　🚌 民宿 ➔ 龜有車站</b>民宿門口就有公車站牌，在葛飾文化會館站搭乘「新小 53」往龜有方向，在龜有站（龜有駅）下車，步行 2 分鐘到龜有車站。<br><span class="sub">車票 ¥230｜總通行時間 21 分（車次 08:04 / 08:20）</span></div>
+<div class="spot"><b>註2　🚌 龜有車站 ➔ 京成立石站</b>回到龜有站公車下車的地點，在龜有站（龜有駅）搭乘「新小 53」往新小岩站東北廣場方向，在立石站入口（立石駅入口）13 號下車，步行 3 分鐘到京成立石站。<br><span class="sub">車票 ¥230｜總通行時間 21 分（車次 12:30 / 12:45）</span></div>
+<div class="spot"><b>註3　🚇 KS49 京成立石站 ➔ 淺草西參道商店街</b>搭乘京成押上線（藍線），在 1 號月台 South1 搭乘往「押上・淺草」方向列車，在 A18 淺草站下車，從 A4 出站，步行 14 分鐘至西參道商店街。<br><span class="sub">車票 ¥345｜總通行時間 16 分</span></div>
+<div class="spot"><b>註4　🚇 淺草寺 ➔ 上野阿美橫町</b>從淺草寺步行 3 分鐘至 G19 淺草站，從 3 號出口入站搭乘銀座線（橘線），搭乘往「澀谷」方向列車，★第二節車廂離出口最近，在 G16 上野站下車，從 7 號出口出站，步行 5 分鐘至阿美橫町。<br><span class="sub">車票 ¥178｜總通行時間 13 分</span></div>
+<div class="spot"><b>註5　🚇 上野阿美橫町 ➔ 民宿</b>阿美橫町步行 4 分鐘至 KS01 京成上野站，搭乘京成本線（藍線），在池之端口搭乘「成田機場」方向列車，在 KS09 青砥站下車，步行 11 分鐘到民宿。<br><span class="sub">車票 ¥272｜總通行時間 28 分</span></div>
+</details>
+
+<details class="fold"><summary>📍 龜有景點地圖</summary>
+<div class="spot"><b>龜有駅</b>${ML('開啟地圖','DTsVXVUEV4aJLsXC9')}</div>
+<div class="spot"><b>龜有觀光案内所</b><span class="star">領取阿兩地圖 🗺️</span><br>${ML('開啟地圖','1Gj4nzvHUmspfJfg9')}</div>
+<div class="spot"><b>Ario 龜有 アリオ亀有</b>${ML('開啟地圖','tg1KViMWY6eQnpNj6')}</div>
+<div class="spot"><b>龜有公園</b>${ML('開啟地圖','zeGmrP4cYNqWWBHi7')}</div>
+<div class="spot"><b>香取神社</b><span class="sub">3-chōme-42-24 Kameari, Katsushika City</span><br>${ML('開啟地圖','mAMSjFsSfTKKuf7F6')}</div>
+<div class="spot"><b>Kochikame Memorial Museum こち亀記念館</b>${ML('開啟地圖','g47MAX9XzwnaThnKA')}</div>
+</details>
+
+<details class="fold"><summary>📍 淺草景點地圖</summary>
+<div class="spot"><b>🛍️ 淺草西參道商店街</b>${ML('開啟地圖','6kvnTXTF622AttsTA')}</div>
+<div class="spot"><b>⛩️ 淺草寺</b>${ML('開啟地圖','4P3NrA4o2mcSzqbx7')}</div>
+</details>
+
+<details class="fold"><summary>📍 上野：餐廳與購物</summary>
+<div class="spot"><b>❶ 🍜 一蘭拉麵　ICHIRAN Ueno (Atre) 一蘭 アトレ上野山下口店</b>${ML('開啟地圖','DJ2aa4Tvh2BH8WFn8')}</div>
+<div class="spot"><b>🍔 鐵板起司漢堡　American Diner Andra</b>${ML('開啟地圖','FAuBArXYxJVGRxT48')}</div>
+<div class="spot"><b>藥妝店：❷ OS Drug 上野店 OSドラッグ 上野店</b>⚠️ 不能退稅，但比退稅便宜<br>⚠️ 只收現金<br>⚠️ 營業時間 10:00–19:45<br><span class="sub">其他藥妝附近也有 Sun Drug / 松本清 / 大國 / Sugi 杉</span><br>${ML('開啟地圖','dkgswzF5p6xwTfbCA')}</div>
+<div class="spot"><b>零食店：❹ Niki no Kashi 二木の菓子 第一営業所</b>${ML('開啟地圖','4YL3tfnae6nN7kh56')}</div>
+<div class="spot"><b>玩具店：❸ Sanrio Gift Gate 上野店</b>${ML('開啟地圖','mQM39LHozFSPJ7eE6')}</div>
+<div class="spot"><b>玩具店：❺ Yamashiroya 上野 ヤマシロヤ</b>⚠️ 玩具不貴也不便宜，但種類很多，可以退稅，戰鬥陀螺可以在這邊找看看<br>${ML('開啟地圖','TKdMmis7AvgfyQuY6')}</div>
+</details>`;
 const DAYS=[
-["1/23 (六)","台灣桃園 ➔ 東京成田","搭乘 JX804（15:00 起飛），19:00 抵達成田機場 NRT，前往葛飾區住宿。"],
-["1/24 (日)","",""],["1/25 (一)","",""],["1/26 (二)","",""],["1/27 (三)","",""],["1/28 (四)","",""],
+["1/23 (六)","台灣桃園 ➔ 東京成田 ➔ 民宿","搭乘 JX804（15:00 起飛），19:00 抵達成田機場 NRT，驅車前往民宿，21:30 抵達後自由活動。",DAY1],
+["1/24 (日)","民宿 ➔ 龜有（尋找兩津勘吉）➔ 淺草江戶風情 ➔ 上野購物","龜有烏龍派出所之旅，下午逛淺草西參道商店街與淺草寺，傍晚到上野阿美橫町晚餐與補貨。",DAY2],["1/25 (一)","",""],["1/26 (二)","",""],["1/27 (三)","",""],["1/28 (四)","",""],
 ["1/29 (五)","東京成田 ➔ 台灣桃園","搭乘 JX801（13:45 起飛），16:50 抵達桃園機場 TPE。"]];
 // 東京1月下旬歷史平均（氣象廳1991-2020平年值＋近年參考）
 // 最高約 9~11°C、最低約 1~2°C、乾燥、偶有降雨／零星降雪
@@ -473,7 +550,7 @@ document.getElementById("days").innerHTML = WEATHER_NOTE + DAYS.map((d,i)=>{
   return '<div class="card"><span class="day-tag">Day '+(i+1)+' · '+d[0]+'</span>'+
     '<h3 class="day-title">'+(d[1]||"行程待安排")+'</h3>'+
     '<div class="section"><p class="section-title">'+w.icon+' 天氣參考</p><p class="section-content">'+w.text+' <span class="badge badge-weather">歷史平均</span></p></div>'+
-    '<div class="section"><p class="section-title">📍 行程焦點</p><p class="section-content">'+(d[2]||"尚未安排")+'</p></div></div>';
+    '<div class="section"><p class="section-title">📍 行程焦點</p><p class="section-content">'+(d[2]||"尚未安排")+'</p></div>'+(d[3]||"")+'</div>';
 }).join("");
 
 let CODE=localStorage.getItem("tokyo-trip-code")||"";
