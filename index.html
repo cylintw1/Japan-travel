@@ -496,26 +496,16 @@ const DAY1=`
 <div class="divider"></div>
 
 <details class="fold" id="fold-map-day1"><summary>🗺️ 地圖檢視（點開）</summary>
-<p class="vmap-note">視覺化位置：成田機場 → 民宿周邊（立石／青砥）。需連網載入地圖圖資。</p>
+<p class="vmap-note">點開後顯示路徑：成田機場 → 青砥／民宿 → 立石公園。點標記可看名稱。需連網。</p>
 <div id="vmap-day1" class="vmap"></div>
 </details>
-
-<div class="section"><p class="section-title">🏠 民宿定位</p>
-<div class="spot"><b>Tateishi Nanachome Park 立石七丁目公園</b>${ML('開啟地圖','ALhk9xkHZ22zWE8JA')}</div></div>
+<details class="fold"><summary>🏠 民宿定位・晚上自由活動（點開展開）</summary>
+<div class="spot"><b>民宿定位：Tateishi Nanachome Park 立石七丁目公園</b><br>${ML('開啟地圖','ALhk9xkHZ22zWE8JA')}</div>
 <div class="divider"></div>
-<div class="section"><p class="section-title"><span class="badge badge-tip">🍶 自由活動選擇（可以買隔天早餐）</span></p>
+<p class="section-title" style="margin-top:8px"><span class="badge badge-tip">🍶 自由活動選擇（可以買隔天早餐）</span></p>
 <div class="spot"><b>A. 居酒屋 🏮 豚燻</b><span class="sub">步行 5 分鐘，營業至 00:00</span><br>${ML('開啟地圖','3WRMaYvWvN6D3VGeA')}</div>
 <div class="spot"><b>B. 超市 🛒 LIVRE KEISEI Aoto リブレ京成 青砥駅前店</b><span class="sub">步行 8 分鐘，營業至 23:00</span><br>${ML('開啟地圖','WKExaoT2d9i9jFhT8')}</div>
-<div class="spot"><b>C. 超市 🛒 Summit Store Katsushika City Hall サミットストア 葛飾区役所前店</b><span class="sub">步行 8 分鐘，營業至 00:00</span><br>${ML('開啟地圖','42Vc9kFGXtmTGUpW6')}</div></div>
-<details class="fold"><summary>⏱️ 步行距離與乘車時間（點開查看）</summary>
-<p class="hint" style="margin:0 0 8px">時間取自行程備註；步行距離以每分鐘約 80 公尺換算，為概估值。</p>
-<table class="luggage-table">
-<tr><th>路段</th><th>時間</th><th>約距離</th></tr>
-<tr><td>成田第二航廈 ➔ 民宿</td><td>車程 1 小時 15 分</td><td>—</td></tr>
-<tr><td>民宿 ➔ 豚燻</td><td>步行 5 分</td><td>約 400 m</td></tr>
-<tr><td>民宿 ➔ LIVRE KEISEI</td><td>步行 8 分</td><td>約 640 m</td></tr>
-<tr><td>民宿 ➔ Summit Store</td><td>步行 8 分</td><td>約 640 m</td></tr>
-</table>
+<div class="spot"><b>C. 超市 🛒 Summit Store Katsushika City Hall サミットストア 葛飾区役所前店</b><span class="sub">步行 8 分鐘，營業至 00:00</span><br>${ML('開啟地圖','42Vc9kFGXtmTGUpW6')}</div>
 </details>`;
 
 const DAY2=`
@@ -1229,28 +1219,25 @@ if(document.readyState === "loading"){
 }
 
 
+
 // —— 行程視覺化地圖（Leaflet）——
 const TRIP_MAPS = {
   day1: {
     el: "vmap-day1",
-    center: [35.76, 140.12],
-    zoom: 10,
     points: [
-      {lat:35.772, lng:140.3929, label:"✈ 成田 NRT", color:"#1a73e8"},
-      {lat:35.7456, lng:139.8563, label:"🏠 青砥／民宿一帶", color:"#137333"},
-      {lat:35.7385, lng:139.8478, label:"立石七丁目公園附近", color:"#34a853"}
+      {lat:35.7720, lng:140.3929, label:"✈ 成田 NRT 19:00", color:"#1a73e8"},
+      {lat:35.7456, lng:139.8563, label:"🏠 青砥／民宿 約21:30", color:"#137333"},
+      {lat:35.7385, lng:139.8478, label:"立石七丁目公園", color:"#34a853"}
     ],
-    line: [[35.772,140.3929],[35.7456,139.8563]]
+    line: [[35.7720,140.3929],[35.7456,139.8563],[35.7385,139.8478]]
   },
   day2: {
     el: "vmap-day2",
-    center: [35.74, 139.83],
-    zoom: 12,
     points: [
       {lat:35.7456, lng:139.8563, label:"🏠 民宿／青砥", color:"#137333"},
       {lat:35.7666, lng:139.8477, label:"① 龜有駅", color:"#1a73e8"},
       {lat:35.7382, lng:139.8485, label:"② 京成立石", color:"#ea8600"},
-      {lat:35.7127, lng:139.7937, label:"③ 淺草／西參道", color:"#c5221f"},
+      {lat:35.7127, lng:139.7937, label:"③ 淺草", color:"#c5221f"},
       {lat:35.7106, lng:139.7745, label:"④ 上野・阿美橫", color:"#1a73e8"}
     ],
     line: [
@@ -1261,41 +1248,81 @@ const TRIP_MAPS = {
 };
 const _tripMapInst = {};
 function initTripMap(key){
-  if(typeof L === "undefined"){ return; }
   const cfg = TRIP_MAPS[key];
   if(!cfg) return;
   const el = document.getElementById(cfg.el);
   if(!el) return;
-  if(_tripMapInst[key]){
-    setTimeout(function(){ _tripMapInst[key].invalidateSize(); }, 200);
-    return;
-  }
-  const map = L.map(cfg.el, {scrollWheelZoom:false}).setView(cfg.center, cfg.zoom);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 18,
-    attribution: "&copy; OpenStreetMap"
-  }).addTo(map);
-  cfg.points.forEach(function(p){
-    const icon = L.divIcon({
-      className: "",
-      html: '<div style="background:'+p.color+';color:#fff;border-radius:12px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.25)">'+p.label+'</div>',
-      iconSize: [null, null],
-      iconAnchor: [40, 12]
+  function draw(){
+    if(typeof L === "undefined"){
+      el.innerHTML = '<p style="padding:16px;color:#5f6368;font-size:.9rem">地圖元件載入中，請稍候再點開一次（需連網）。</p>';
+      setTimeout(function(){ if(typeof L !== "undefined"){ el.innerHTML=""; draw(); } }, 800);
+      return;
+    }
+    if(_tripMapInst[key]){
+      setTimeout(function(){ _tripMapInst[key].invalidateSize(); }, 150);
+      return;
+    }
+    el.innerHTML = "";
+    const map = L.map(el, {scrollWheelZoom:false});
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18,
+      attribution: "&copy; OpenStreetMap"
+    }).addTo(map);
+    const latlngs = [];
+    cfg.points.forEach(function(p, i){
+      latlngs.push([p.lat, p.lng]);
+      const icon = L.divIcon({
+        className: "",
+        html: '<div style="background:'+p.color+';color:#fff;border-radius:14px;padding:4px 9px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.3);border:2px solid #fff">'+p.label+'</div>',
+        iconSize: [10, 10],
+        iconAnchor: [5, 5]
+      });
+      L.marker([p.lat, p.lng], {icon: icon})
+        .addTo(map)
+        .bindPopup('<b>'+p.label+'</b>');
     });
-    L.marker([p.lat, p.lng], {icon: icon}).addTo(map);
-  });
-  if(cfg.line && cfg.line.length > 1){
-    L.polyline(cfg.line, {color:"#1a73e8", weight:4, opacity:0.7, dashArray:"8 8"}).addTo(map);
+    if(cfg.line && cfg.line.length > 1){
+      L.polyline(cfg.line, {color:"#1a73e8", weight:4, opacity:0.75, dashArray:"8 6"}).addTo(map);
+    }
+    map.fitBounds(latlngs, {padding: [36, 36]});
+    _tripMapInst[key] = map;
+    setTimeout(function(){ map.invalidateSize(); }, 200);
+    setTimeout(function(){ map.invalidateSize(); }, 500);
   }
-  _tripMapInst[key] = map;
-  setTimeout(function(){ map.invalidateSize(); }, 250);
+  draw();
 }
-document.addEventListener("toggle", function(e){
-  const t = e.target;
-  if(!t || !t.classList || !t.classList.contains("fold") || !t.open) return;
-  if(t.id === "fold-map-day1") initTripMap("day1");
-  if(t.id === "fold-map-day2") initTripMap("day2");
-}, true);
+function setupTripMapFolds(){
+  ["fold-map-day1","fold-map-day2"].forEach(function(id){
+    const fold = document.getElementById(id);
+    if(!fold || fold._mapBound) return;
+    fold._mapBound = true;
+    fold.addEventListener("toggle", function(){
+      if(fold.open){
+        const key = id.indexOf("day1") >= 0 ? "day1" : "day2";
+        initTripMap(key);
+      }
+    });
+    // 部分瀏覽器點 summary 較穩
+    const sum = fold.querySelector("summary");
+    if(sum){
+      sum.addEventListener("click", function(){
+        setTimeout(function(){
+          if(fold.open){
+            const key = id.indexOf("day1") >= 0 ? "day1" : "day2";
+            initTripMap(key);
+          }
+        }, 50);
+      });
+    }
+  });
+}
+// 行程卡片是 JS 動態寫入，需在寫入後綁定
+document.addEventListener("DOMContentLoaded", function(){
+  setTimeout(setupTripMapFolds, 100);
+});
+// 若 DAYS 已渲染完再補綁一次
+setTimeout(setupTripMapFolds, 300);
+setTimeout(setupTripMapFolds, 1000);
 
 function speakJa(text){
   if(!window.speechSynthesis){alert('此裝置不支援語音朗讀');return;}
