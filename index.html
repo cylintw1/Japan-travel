@@ -303,9 +303,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans T
 </div>
 
 <div class="card">
-<div class="section-title">🍜 一蘭拉麵（範例）</div>
+<div class="section-title">選擇餐廳</div>
+<div class="restaurant-switch" id="restaurantSwitch">
+<button type="button" class="restaurant-btn active" data-rest="ichiran" onclick="selectRestaurant('ichiran')">一蘭拉麵</button>
+<button type="button" class="restaurant-btn" data-rest="andra" onclick="selectRestaurant('andra')">ANDRA 漢堡</button>
+</div>
+<p class="hint" id="menuRestNote">價格為公開參考，到店以實際菜單為準。</p>
 <p class="hint" style="margin:0 0 10px">點選數量後按「加入」，會同步到家庭清單。</p>
 <div id="menu_ichiran"></div>
+<div id="menu_andra" style="display:none"></div>
 </div>
 
 <div class="card">
@@ -762,6 +768,29 @@ const MENUS = {
       { id: "beer", zh: "生啤酒", ja: "生ビール", price: "¥590" },
       { id: "soft", zh: "軟性飲料", ja: "ソフトドリンク", price: "¥240" }
     ]
+  },
+  andra: {
+    label_zh: "ANDRA 鐵板起司漢堡",
+    label_ja: "ANDRA ハンバーガー",
+    note_zh: "上野・美式餐廳。價格為網路上公開參考（約2025–2026、含稅），到店以菜單為準。招牌為「起司海鐵板漢堡」。",
+    note_ja: "上野のアメリカンダイナー。価格は公開情報の参考（税込）。店頭メニューをご確認ください。名物は「チーズにインしたハンバーガー」。",
+    items: [
+      { id: "cheese_in_2", zh: "【招牌】起司海鐵板漢堡（2片肉餅）", ja: "【名物】チーズにインしたハンバーガー（2枚）", price: "¥2,200" },
+      { id: "cheese_in_3", zh: "起司海鐵板漢堡（3片肉餅）", ja: "チーズにインしたハンバーガー（3枚）", price: "¥2,700" },
+      { id: "cheese_in_4", zh: "起司海鐵板漢堡（4片肉餅）", ja: "チーズにインしたハンバーガー（4枚）", price: "¥3,200" },
+      { id: "cheeseburger_2", zh: "起司漢堡（2片）", ja: "チーズバーガー（2枚）", price: "¥1,750" },
+      { id: "classic_2", zh: "經典起司漢堡（2片）", ja: "クラシックチーズバーガー（2枚）", price: "¥1,950" },
+      { id: "oklahoma_2", zh: "奧克拉荷馬Smash漢堡（2片）", ja: "オクラハマスマッシュバーガー（2枚）", price: "¥1,850" },
+      { id: "andra_style_2", zh: "ANDRA Style（2片）", ja: "アンドラスタイル（2枚）", price: "¥2,650" },
+      { id: "set_potato", zh: "加點：薯條", ja: "セット：ポテト", price: "+¥300" },
+      { id: "set_drink", zh: "加點：軟性飲料", ja: "セット：ソフトドリンク", price: "+¥300" },
+      { id: "set_both", zh: "加點：薯條＋飲料", ja: "セット：ポテト＆ドリンク", price: "+¥500" },
+      { id: "burrito_beef", zh: "牛肉捲餅", ja: "ビーフブリトー", price: "¥1,500" },
+      { id: "burrito_chicken", zh: "雞肉捲餅", ja: "チキンブリトー", price: "¥1,400" },
+      { id: "burrito_special", zh: "特製捲餅", ja: "スペシャルブリトー", price: "¥1,800" },
+      { id: "blts", zh: "BLT 三明治", ja: "B.L.T", price: "¥1,600" },
+      { id: "fries_only", zh: "薯條（單點）", ja: "ポテト", price: "¥300" }
+    ]
   }
 };
 
@@ -864,6 +893,24 @@ function updateOrderStatus(){
   if(refreshBtn) refreshBtn.style.display = "inline-block";
   if(clearMineBtn) clearMineBtn.style.display = "inline-block";
   if(clearAllBtn) clearAllBtn.style.display = "inline-block";
+}
+
+
+let currentRestaurant = "ichiran";
+function selectRestaurant(id){
+  currentRestaurant = id || "ichiran";
+  document.querySelectorAll(".restaurant-btn").forEach(function(b){
+    b.classList.toggle("active", b.getAttribute("data-rest") === currentRestaurant);
+  });
+  Object.keys(MENUS).forEach(function(rid){
+    var el = document.getElementById("menu_" + rid);
+    if(el) el.style.display = (rid === currentRestaurant) ? "block" : "none";
+  });
+  renderMenu(currentRestaurant);
+  var note = document.getElementById("menuRestNote");
+  if(note && MENUS[currentRestaurant]){
+    note.textContent = MENUS[currentRestaurant].note_zh || "價格為公開參考，到店以實際菜單為準。";
+  }
 }
 
 function renderMenu(rest){
@@ -1197,7 +1244,7 @@ document.addEventListener("click", function(e){
   if(btn && btn.dataset.tab === "order"){
     setTimeout(function(){
       updateOrderStatus();
-      renderMenu("ichiran");
+      selectRestaurant("ichiran");
       const code = localStorage.getItem("tokyo-order-code");
       if(code){ refreshOrder(); startOrderPoll(); }
     }, 50);
@@ -1208,7 +1255,7 @@ document.addEventListener("click", function(e){
 
 function initOrderTab(){
   updateOrderStatus();
-  renderMenu("ichiran");
+  selectRestaurant("ichiran");
   const code = localStorage.getItem("tokyo-order-code");
   if(code) refreshOrder();
 }
